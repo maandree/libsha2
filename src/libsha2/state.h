@@ -181,6 +181,8 @@ typedef struct libsha2_state
    */
   libsha2_algorithm_t algorithm;
   
+  int __padding1;
+  
 } libsha2_state_t;
 
 
