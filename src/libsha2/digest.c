@@ -82,8 +82,8 @@
  * 
  * @param  state  The hashing state
  */
-__attribute__((nonnull, nothrow))
-static void process256(libsha2_state_t* restrict state)
+static __attribute__((nonnull, nothrow))
+void process256(libsha2_state_t* restrict state)
 {
   uint32_t s0, s1;
   size_t i, j;
@@ -99,8 +99,8 @@ static void process256(libsha2_state_t* restrict state)
  * 
  * @param  state  The hashing state
  */
-__attribute__((nonnull, nothrow))
-static void process512(libsha2_state_t* restrict state)
+static __attribute__((nonnull, nothrow))
+void process512(libsha2_state_t* restrict state)
 {
   uint64_t s0, s1;
   size_t i, j;
