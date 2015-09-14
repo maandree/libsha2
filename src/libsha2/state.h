@@ -148,27 +148,21 @@ typedef struct libsha2_state
   } work_h;
   
   /**
-   * Space for chunks to process
+   * Space for chunks to process, limited
+   * to 64 bytes on 32-bit algorithms
    */
-  union
-  {
-    /**
-     * For 32-bit algorithms
-     */
-    unsigned char b32[64];
-    
-    /**
-     * For 64-bit algorithms
-     */
-    unsigned char b64[128];
-    
-  } chunk;
+  unsigned char chunk[128];
   
   /**
-   * Output buffer, required because
-   * some algorithms truncate the output
+   * Space for storing the last bits and
+   * the padding
    */
-  char output[64];
+  char appendix[256];
+  
+  /**
+   * The size of the chunks, in bytes
+   */
+  size_t chunk_size;
   
   /**
    * The algorithm that is used

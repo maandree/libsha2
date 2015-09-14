@@ -27,7 +27,7 @@
  * Absorb more of the message
  * 
  * @param  state    The hashing state
- * @param  message  The message
+ * @param  message  The message, in bits, must be equivalent to 0 modulus 8
  * @param  msglen   The length of the message
  */
 __attribute__((nonnull, nothrow))
@@ -37,7 +37,7 @@ void libsha2_update(libsha2_state_t* restrict state, const char* restrict messag
  * Absorb the last part of the message and output a hash
  * 
  * @param  state    The hashing state
- * @param  message  The message
+ * @param  message  The message, in bits
  * @param  msglen   The length of the message, zero if there is nothing more to absorb
  * @param  output   The output buffer for the hash
  */

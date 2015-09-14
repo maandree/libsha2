@@ -95,17 +95,19 @@ int libsha2_state_initialise(libsha2_state_t* restrict state, libsha2_algorithm_
       return errno = EINVAL, -1;
     }
   
-  /* Set round constants. */
+  /* Set round constants, and chunk size. */
   switch (algorithm)
     {
     case LIBSHA2_224:
     case LIBSHA2_256:
       for (i = 0; i < 64; i++)
 	state->k.b32[i] = (uint32_t)(ROUND_CONSTANTS[i] >> 32);
+      state->chunk_size = 64;
       break;
       
     default:
       memcpy(state->k.b64, ROUND_CONSTANTS, sizeof(ROUND_CONSTANTS));
+      state->chunk_size = 128;
       break;
     }
   
