@@ -79,6 +79,7 @@ int libsha2_state_initialise(libsha2_state_t* restrict state, libsha2_algorithm_
   
   size_t i;
   
+  memset(state, 0, sizeof(*state));
   state->message_size = 0;
   state->algorithm = algorithm;
   

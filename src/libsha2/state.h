@@ -71,6 +71,12 @@ typedef enum libsha2_algorithm
  * exposing two versions of each function: one to wipe data,
  * and one not to wipe data to gain speed, now you can use use
  * `explicit_bzero` (or `memset`) when you are done.
+ * 
+ * This datastructure is flat (it contains dynamic pointers)
+ * and can be marshalled and unmarshalled naïvely, and does
+ * not need destroyed; however, if you when to marshall it
+ * using as little memory as possible, this are comments
+ * about data that does not need to be mashalled
  */
 typedef struct libsha2_state
 {
@@ -98,6 +104,8 @@ typedef struct libsha2_state
   
   /**
    * Words
+   * 
+   * Does not need to be marshalled
    */
   union
   {
@@ -132,6 +140,8 @@ typedef struct libsha2_state
   
   /**
    * Temporary hashing values
+   * 
+   * Does not need to be marshalled
    */
   union
   {
@@ -156,6 +166,8 @@ typedef struct libsha2_state
   /**
    * Space for storing the last bits and
    * the padding
+   * 
+   * Does not need to be marshalled
    */
   char appendix[256];
   
