@@ -16,14 +16,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef LIBSHA2_H
-#define LIBSHA2_H  1
+#ifndef LIBSHA2_FILES_H
+#define LIBSHA2_FILES_H  1
 
 
-#include "libsha2/digest.h"
-#include "libsha2/state.h"
-#include "libsha2/hex.h"
-#include "libsha2/files.h"
+#include "state.h"
+
+
+/**
+ * Calculate the checksum for a file,
+ * the content of the file is assumed non-sensitive
+ * 
+ * @param   fd         The file descriptor of the file
+ * @param   algorithm  The hashing algorithm
+ * @param   hashsum    Output buffer for the hash
+ * @return             Zero on success, -1 on error
+ */
+__attribute__((nonnull, leaf))
+int libsha2_sum_fd(int fd, libsha2_algorithm_t algorithm, char* restrict hashsum);
 
 
 #endif
