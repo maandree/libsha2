@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <alloca.h>
+#include <errno.h>
 
 
 
@@ -54,8 +55,14 @@ int libsha2_sum_fd(int fd, libsha2_algorithm_t algorithm, char* restrict hashsum
   for (;;)
     {
       got = read(fd, chunk, blksize);
-      if (got < 0)   return -1;
-      if (got == 0)  break;
+      if (got < 0)
+	{
+	  if (errno == EINTR)
+	    continue;
+	  return -1;
+	}
+      if (got == 0)
+	break;
       libsha2_update(&state, chunk, (size_t)got);
     }
   
