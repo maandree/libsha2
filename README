@@ -1,2 +1,15 @@
-SHA-2-family hashing library.
+NAME
+	libsha2 - SHA-2-family hashing library
+
+DESCRIPTION
+	libsha2 is a bit-oriented implementation of the SHA2-family
+	with support for SHA-224, SHA-256, SHA-384, SHA-512,
+	SHA-512/224, and SHA-512/256, state marshalling, secure
+	erasure of sensitive data, and HMAC.
+
+RATIONALE
+	This should be obvious.
+
+SEE ALSO
+	libkeccak(7), sha224sum(1), sha256sum(1), sha384sum(1), sha512sum(1)
 
