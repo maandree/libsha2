@@ -33,32 +33,32 @@ typedef enum libsha2_algorithm
     /**
      * SHA-224, outputs 28 bytes
      */
-    LIBSHA2_224 = 1,
+     LIBSHA2_224 = 1
     
     /**
      * SHA-256, outputs 32 bytes
      */
-    LIBSHA2_256 = 2,
+    ,LIBSHA2_256 = 2
     
     /**
      * SHA-384, outputs 48 bytes
      */
-    LIBSHA2_384 = 3,
+    ,LIBSHA2_384 = 3
     
     /**
      * SHA-512, outputs 64 bytes
      */
-    LIBSHA2_512 = 4,
+    ,LIBSHA2_512 = 4
     
     /**
      * SHA-512/224, outputs 28 bytes
      */
-    LIBSHA2_512_224 = 5,
+    ,LIBSHA2_512_224 = 5
     
     /**
      * SHA-512/256, outputs 32 bytes
      */
-    LIBSHA2_512_256 = 6,
+    ,LIBSHA2_512_256 = 6
     
   } libsha2_algorithm_t;
 
