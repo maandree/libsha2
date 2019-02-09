@@ -15,14 +15,15 @@ The
 .BR libsha2_digest ()
 function feeds the first
 .I msglen
-bytes of
+.B bits
+of
 .I message
 into the hashing state of the
 .I state
 parameter, and finalises the hashing.
 The resulting hash is stored in binary
 format in
-.I output .
+.IR output .
 The user must make sure that
 .I output
 is sufficiently large, which means at

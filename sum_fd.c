@@ -37,10 +37,9 @@ libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, char *restrict hashsum)
 				continue;
 			return -1;
 		}
-		libsha2_update(&state, chunk, (size_t)r);
+		libsha2_update(&state, chunk, (size_t)r * 8);
 	}
 
 	libsha2_digest(&state, NULL, 0, hashsum);
 	return 0;
 }
-

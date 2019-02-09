@@ -15,7 +15,8 @@ The
 .BR libsha2_update ()
 function feeds the first
 .I msglen
-bytes of
+.B bits
+(must equivalent to 0 modulus 8) of
 .I message
 into the hashing state of the
 .I state
