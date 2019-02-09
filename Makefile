@@ -22,9 +22,11 @@ OBJ =\
 	behex_upper.o\
 	digest.o\
 	init.o\
+	marshal.o\
 	state_output_size.o\
 	sum_fd.o\
 	unhex.o\
+	unmarshal.o\
 	update.o\
 
 MAN0 =\

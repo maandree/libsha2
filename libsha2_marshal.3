@@ -1,0 +1,56 @@
+.TH LIBSHA2_MARSHAL 3 2019-02-09 libjson
+.SH NAME
+libsha2_marshal \- Marshal a SHA 2 hashing state
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, char *restrict \fIbuf\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_marshal ()
+function marshal
+.I state
+into the buffer
+.IR buf .
+If the function is called with
+.I NULL
+as
+.IR buf ,
+the required size for
+.I buf
+is returned.
+.PP
+A version number is marshalled into
+.IR buf ,
+this allows new versions of the library to
+unmarshal states marshalled by older versions.
+.SH RETURN VALUE
+The
+.BR libsha2_init ()
+function returns the number of marshalled
+bytes (or if
+.I buf
+is
+.IR NULL ,
+the number of bytes that would have been marshalled).
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_unmarshal (3)

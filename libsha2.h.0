@@ -27,6 +27,8 @@ int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, char *r
 void libsha2_behex_lower(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
 void libsha2_behex_upper(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
 void libsha2_unhex(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP);
+size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, char *restrict \fIbuf\fP);
+size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fIbuf\fP, size_t \fIbufsize\fP);
 .fi
 .PP
 Link with
@@ -86,6 +88,12 @@ to hexadecimal.
 .TP
 .BR libsha2_unhex (3)
 Convert a hexadecimal hash to binary.
+.TP
+.BR libsha2_marshal (3)
+Marshal a hashing state.
+.TP
+.BR libsha2_unmarshal (3)
+Unmarshal a hashing state.
 .SH EXAMPLES
 None.
 .SH APPLICATION USAGE
@@ -104,7 +112,9 @@ None.
 .BR libsha2_behex_upper (3),
 .BR libsha2_digest (3),
 .BR libsha2_init (3),
+.BR libsha2_marshal (3),
 .BR libsha2_state_output_size (3),
 .BR libsha2_sum_fd (3),
 .BR libsha2_unhex (3),
+.BR libsha2_unmarshal (3),
 .BR libsha2_update (3)

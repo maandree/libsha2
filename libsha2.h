@@ -264,5 +264,30 @@ __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
 void libsha2_unhex(char *restrict, const char *restrict);
 
+/**
+ * Marshal a state into a buffer
+ * 
+ * @param   state  The state to marshal
+ * @param   buf    Output buffer, `NULL` to only return the required size
+ * @return         The number of bytes marshalled to `buf`
+ */
+#if defined(__GNUC__)
+__attribute__((__leaf__, __nonnull__(1), __nothrow__))
+#endif
+size_t libsha2_marshal(const struct libsha2_state *restrict, char *restrict);
+
+/**
+ * Unmarshal a state from a buffer
+ * 
+ * @param   state    Output parameter for the unmarshalled state
+ * @param   buf      The buffer from which the state shall be unmarshalled
+ * @param   bufsize  The maximum number of bytes that can be unmarshalled
+ * @return           The number of read bytes, 0 on failure
+ */
+#if defined(__GNUC__)
+__attribute__((__leaf__, __nonnull__, __nothrow__))
+#endif
+size_t libsha2_unmarshal(struct libsha2_state *restrict, const char *restrict, size_t);
+
 
 #endif
