@@ -6,9 +6,6 @@ LIB_MAJOR = 1
 LIB_MINOR = 0
 LIB_VERSION = $(LIB_MAJOR).$(LIB_MINOR)
 
-LIBEXT = so
-LIBFLAGS = -shared -Wl,-soname,libsha2.$(LIBEXT).$(LIB_MAJOR)
-
 include $(CONFIGFILE)
 
 
