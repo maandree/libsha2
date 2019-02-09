@@ -37,10 +37,12 @@ MAN3 =\
 	libsha2_behex_lower.3\
 	libsha2_behex_upper.3\
 	libsha2_digest.3\
+	libsha2_marshal.3\
 	libsha2_init.3\
 	libsha2_state_output_size.3\
 	libsha2_sum_fd.3\
 	libsha2_unhex.3\
+	libsha2_unmarshal.3\
 	libsha2_update.3
 
 
@@ -54,7 +56,7 @@ $(OBJ:.o=.lo): $(@:.lo=.c) $(HDR)
 .c.lo:
 	$(CC) -fPIC -c -o $@ $< $(CFLAGS)
 
-libsha2.$(LIBEXT): $(OBJ)
+libsha2.$(LIBEXT): $(OBJ:.o=.lo)
 	$(CC) $(LIBFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 libsha2.a: $(OBJ)
