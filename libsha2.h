@@ -164,7 +164,7 @@ struct libsha2_state {
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nothrow__, __nonnull__))
 #endif
-int libsha2_state_initialise(struct libsha2_state *restrict, enum libsha2_algorithm);
+int libsha2_init(struct libsha2_state *restrict, enum libsha2_algorithm);
 
 /**
  * Get the output size of the algorithm specified for a state

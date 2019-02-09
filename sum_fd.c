@@ -20,7 +20,7 @@ libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, char *restrict hashsum)
 	size_t blksize = 4096;
 	char *restrict chunk;
 
-	if (libsha2_state_initialise(&state, algorithm) < 0)
+	if (libsha2_init(&state, algorithm) < 0)
 		return -1;
 
 	if (fstat(fd, &attr) == 0 && attr.st_blksize > 0)

@@ -21,11 +21,25 @@ OBJ =\
 	behex_lower.o\
 	behex_upper.o\
 	digest.o\
-	state_initialise.o\
+	init.o\
 	state_output_size.o\
 	sum_fd.o\
 	unhex.o\
 	update.o\
+
+MAN0 =\
+	libsha2.h.0
+
+MAN3 =\
+	libsha2_algorithm_output_size.3\
+	libsha2_behex_lower.3\
+	libsha2_behex_upper.3\
+	libsha2_digest.3\
+	libsha2_init.3\
+	libsha2_state_output_size.3\
+	libsha2_sum_fd.3\
+	libsha2_unhex.3\
+	libsha2_update.3
 
 
 all: libsha2.a libsha2.$(LIBEXT)

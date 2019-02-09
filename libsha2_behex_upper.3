@@ -1,0 +1,49 @@
+.TH LIBSHA2_BEHEX_UPPER 3 2019-02-09 libjson
+.SH NAME
+libsha2_behex_upper \- Convert binary to upper case hexadecimal
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+void libsha2_behex_upper(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_behex_upper ()
+function converts the
+.I n
+first bytes of
+.I hashsum
+to upper case hexadecimal, as exactly
+.I 2*n
+characters, and stores the result, with
+NUL byte termination, to
+.IR output .
+.PP
+The user must make sure that
+.I output
+is at least
+.I 2*n+1
+bytes large.
+.SH RETURN VALUE
+None.
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_behex_lower (3),
+.BR libsha2_unhex (3)

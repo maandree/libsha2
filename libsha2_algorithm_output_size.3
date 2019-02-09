@@ -1,0 +1,51 @@
+.TH LIBSHA2_ALGORITHM_OUTPUT_SIZE 3 2019-02-09 libjson
+.SH NAME
+libsha2_algorithm_output_size \- Get the size of the output for a SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+size_t libsha2_algorithm_output_size(enum libsha2_algorithm \fIalgorithm\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_algorithm_output_size ()
+function get the output size for the
+binary output of the hash algorithm
+selected for the selected
+.IR algorithm .
+.SH RETURN VALUE
+The
+.BR libsha2_algorithm_output_size ()
+function returns the output size in bytes,
+a positive number upon successful completion,
+otherwise 0 is returned and
+.I errno
+is set appropriately.
+.SH ERRORS
+The
+.BR libsha2_algorithm_output_size ()
+function will fail if:
+.TP
+.B EINVAL
+.I algorithm
+is not a valid
+.B enum libsha2_algorithm
+value.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_state_output_size (3)

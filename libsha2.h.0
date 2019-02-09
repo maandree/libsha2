@@ -1,0 +1,110 @@
+.TH LIBSHA2.H 0 2019-02-09 libjson
+.SH NAME
+libsha2.h \- SHA 2 library header
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+enum libsha2_algorithm {
+	LIBSHA2_224,     /* SHA-224     */
+	LIBSHA2_256,     /* SHA-256     */
+	LIBSHA2_384,     /* SHA-384     */
+	LIBSHA2_512,     /* SHA-512     */
+	LIBSHA2_512_224, /* SHA-512/224 */
+	LIBSHA2_512_256  /* SHA-512/256 */
+};
+
+struct libsha2_state {
+	/* members omitted */
+};
+
+int libsha2_init(struct libsha2_state *restrict \fIstate\fP, enum libsha2_algorithm \fIalgorithm\fP);
+size_t libsha2_state_output_size(const struct libsha2_state *restrict \fIstate\fP);
+size_t libsha2_algorithm_output_size(enum libsha2_algorithm \fIalgorithm\fP);
+void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP);
+void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP, char *\fIoutput\fP);
+int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, char *restrict \fIhashsum\fP);
+void libsha2_behex_lower(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
+void libsha2_behex_upper(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
+void libsha2_unhex(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.B libsha2.h
+header, the header for the libsha2 C library defines
+.B enum libsha2_algorithm
+which has one value per supported algorithm:
+.TP
+.B LIBSHA2_224
+SHA-224
+.TP
+.B LIBSHA2_256
+SHA-256
+.TP
+.B LIBSHA2_384
+SHA-384
+.TP
+.B LIBSHA2_512
+SHA-512
+.TP
+.B LIBSHA2_512_224
+SHA-512/224
+.TP
+.B LIBSHA2_512_256
+SHA-512/256
+.PP
+Further, the
+.B libsha2.h
+header defines the opaque, but complete,
+.B struct libsha2_state
+which stores the selected algorithm and
+the state of the hashing. The header also
+defines the functions:
+.TP
+.BR libsha2_init (3)
+Initialise hashing state.
+.TP
+.BR libsha2_state_output_size "(3), " libsha2_algorithm_output_size (3)
+Get the output size for an algorithm.
+.TP
+.BR libsha2_update (3)
+Feed data into the hashing state.
+.TP
+.BR libsha2_digest (3)
+Get the result of a hashing.
+.TP
+.BR libsha2_sum_fd (3)
+Hash an entire file.
+.TP
+.BR libsha2_behex_lower "(3), " libsha2_behex_upper (3)
+Convert binary output from
+.BR libsha2_digest (3)
+to hexadecimal.
+.TP
+.BR libsha2_unhex (3)
+Convert a hexadecimal hash to binary.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_algorithm_output_size (3),
+.BR libsha2_behex_lower (3),
+.BR libsha2_behex_upper (3),
+.BR libsha2_digest (3),
+.BR libsha2_init (3),
+.BR libsha2_state_output_size (3),
+.BR libsha2_sum_fd (3),
+.BR libsha2_unhex (3),
+.BR libsha2_update (3)

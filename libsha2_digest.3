@@ -1,0 +1,61 @@
+.TH LIBSHA2_DIGEST 3 2019-02-09 libjson
+.SH NAME
+libsha2_digest \- Get the result of a SHA 2 hashing
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP, char *\fIoutput\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_digest ()
+function feeds the first
+.I msglen
+bytes of
+.I message
+into the hashing state of the
+.I state
+parameter, and finalises the hashing.
+The resulting hash is stored in binary
+format in
+.I output .
+The user must make sure that
+.I output
+is sufficiently large, which means at
+least the return value of the
+.BR libsha2_state_output_size (3)
+function.
+.PP
+The
+.BR libsha2_behex_lower (3)
+and
+.BR libsha2_behex_upper (3)
+functions can be used to convert the
+result to hexadecimal format.
+.SH RETURN VALUE
+None.
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_behex_lower (3),
+.BR libsha2_behex_upper (3),
+.BR libsha2_init (3),
+.BR libsha2_state_output_size (3),
+.BR libsha2_sum_fd (3),
+.BR libsha2_update (3)

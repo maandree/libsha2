@@ -1,0 +1,64 @@
+.TH LIBSHA2_INIT 3 2019-02-09 libjson
+.SH NAME
+libsha2_init \- Initialises hashing with a SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+enum libsha2_algorithm {
+	LIBSHA2_224,     /* SHA-224     */
+	LIBSHA2_256,     /* SHA-256     */
+	LIBSHA2_384,     /* SHA-384     */
+	LIBSHA2_512,     /* SHA-512     */
+	LIBSHA2_512_224, /* SHA-512/224 */
+	LIBSHA2_512_256  /* SHA-512/256 */
+};
+
+int libsha2_init(struct libsha2_state *restrict \fIstate\fP, enum libsha2_algorithm \fIalgorithm\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_init ()
+function stores the selected
+.I algorithm
+in
+.I state
+and initialises
+.I state
+accordingly with the initial hashing state.
+.SH RETURN VALUE
+The
+.BR libsha2_init ()
+function returns 0 upon successful completion,
+otherwise -1 is returned and
+.I errno
+is set appropriately.
+.SH ERRORS
+The
+.BR libsha2_init ()
+function will fail if:
+.TP
+.B EINVAL
+.I algorithm
+is not a valid
+.B enum libsha2_algorithm
+value.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_digest (3),
+.BR libsha2_sum_fd (3),
+.BR libsha2_update (3)

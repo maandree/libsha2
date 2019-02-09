@@ -86,7 +86,7 @@ static const uint64_t H_512_256[] = {
  * @return             Zero on success, -1 on error
  */
 int
-libsha2_state_initialise(struct libsha2_state *restrict state, enum libsha2_algorithm algorithm)
+libsha2_init(struct libsha2_state *restrict state, enum libsha2_algorithm algorithm)
 {
 	size_t i;
 

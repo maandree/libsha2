@@ -1,0 +1,77 @@
+.TH LIBSHA2_SUM_FD 3 2019-02-09 libjson
+.SH NAME
+libsha2_sum_fd \- Hash a file with a SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+enum libsha2_algorithm {
+	LIBSHA2_224,     /* SHA-224     */
+	LIBSHA2_256,     /* SHA-256     */
+	LIBSHA2_384,     /* SHA-384     */
+	LIBSHA2_512,     /* SHA-512     */
+	LIBSHA2_512_224, /* SHA-512/224 */
+	LIBSHA2_512_256  /* SHA-512/256 */
+};
+
+int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, char *restrict \fIhashsum\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_sum_fd ()
+function hashes the file with the
+file descriptor
+.I fd
+with the selected
+.IR algorithm .
+The resulting hash is stored in binary
+format in
+.I hashsum .
+The user must make sure that
+.I hashsum
+is sufficiently large, which means at
+least the return value of the
+.BR libsha2_algorithm_output_size (3)
+function.
+.PP
+The
+.BR libsha2_behex_lower (3)
+and
+.BR libsha2_behex_upper (3)
+functions can be used to convert the
+result to hexadecimal format.
+.SH RETURN VALUE
+The
+.BR libsha2_sum_fd ()
+function returns 0 upon successful completion,
+otherwise -1 is returned and
+.I errno
+is set appropriately.
+.SH ERRORS
+The
+.BR libsha2_sum_fd ()
+function may fail for any reason specified for the
+.BR read (3)
+and
+.BR libsha2_init (3)
+functions.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_algorithm_output_size (3),
+.BR libsha2_behex_lower (3),
+.BR libsha2_behex_upper (3),
+.BR libsha2_init (3)

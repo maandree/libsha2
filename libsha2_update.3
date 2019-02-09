@@ -1,0 +1,42 @@
+.TH LIBSHA2_UPDATE 3 2019-02-09 libjson
+.SH NAME
+libsha2_update \- Feed data into a SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_update ()
+function feeds the first
+.I msglen
+bytes of
+.I message
+into the hashing state of the
+.I state
+parameter.
+.SH RETURN VALUE
+None.
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_digest (3),
+.BR libsha2_init (3),
+.BR libsha2_sum_fd (3)

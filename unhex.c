@@ -14,9 +14,10 @@ void
 libsha2_unhex(char *restrict output, const char *restrict hashsum)
 {
 	size_t n = strlen(hashsum) / 2;
+	char a, b;
 	while (n--) {
-		char a = hashsum[2 * n + 0];
-		char b = hashsum[2 * n + 1];
+		a = hashsum[2 * n + 0];
+		b = hashsum[2 * n + 1];
 
 		a = (char)((a & 15) + (a > '9' ? 9 : 0));
 		b = (char)((b & 15) + (b > '9' ? 9 : 0));
