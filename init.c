@@ -107,18 +107,13 @@ libsha2_init(struct libsha2_state *restrict state, enum libsha2_algorithm algori
 	}
 
 	/* Set round constants, and chunk size. */
-	switch (algorithm) {
-	case LIBSHA2_224:
-	case LIBSHA2_256:
+	if (algorithm <= LIBSHA2_256) {
 		for (i = 0; i < 64; i++)
 			state->k.b32[i] = (uint32_t)(ROUND_CONSTANTS[i] >> 32);
 		state->chunk_size = 64;
-		break;
-
-	default:
+	} else {
 		memcpy(state->k.b64, ROUND_CONSTANTS, sizeof(ROUND_CONSTANTS));
 		state->chunk_size = 128;
-		break;
 	}
   
 	return 0;

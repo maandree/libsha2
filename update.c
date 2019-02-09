@@ -122,16 +122,10 @@ libsha2_update(struct libsha2_state *restrict state, const char *restrict messag
 		n = n < msglen ? n : msglen;
 		memcpy(state->chunk + off, message, n);
 		if (off + n == state->chunk_size) {
-			switch (state->algorithm) {
-			case LIBSHA2_224:
-			case LIBSHA2_256:
+			if (state->algorithm <= LIBSHA2_256)
 				process256(state);
-				break;
-
-			default:
+			else
 				process512(state);
-				break;
-			}
 		}
 		message += n, mlen += n, msglen -= n;
 	}

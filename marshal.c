@@ -24,9 +24,7 @@ libsha2_marshal(const struct libsha2_state *restrict state, char *restrict buf)
 		*(size_t *)&buf[off] = state->message_size;
 	off += sizeof(size_t);
 
-	switch (state->algorithm) {
-	case LIBSHA2_224:
-	case LIBSHA2_256:
+	if (state->algorithm <= LIBSHA2_256) {
 		if (buf)
 			memcpy(&buf[off], state->k.b32, sizeof(state->k.b32));
 		off += sizeof(state->k.b32);
@@ -36,9 +34,7 @@ libsha2_marshal(const struct libsha2_state *restrict state, char *restrict buf)
 		if (buf)
 			memcpy(&buf[off], state->h.b32, sizeof(state->h.b32));
 		off += sizeof(state->h.b32);
-		break;
-
-	default:
+	} else {
 		if (buf)
 			memcpy(&buf[off], state->k.b64, sizeof(state->k.b64));
 		off += sizeof(state->k.b64);
@@ -48,7 +44,6 @@ libsha2_marshal(const struct libsha2_state *restrict state, char *restrict buf)
 		if (buf)
 			memcpy(&buf[off], state->h.b64, sizeof(state->h.b64));
 		off += sizeof(state->h.b64);
-		break;
 	}
 
 	if (buf)

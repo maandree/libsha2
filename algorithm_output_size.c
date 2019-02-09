@@ -19,6 +19,7 @@ libsha2_algorithm_output_size(enum libsha2_algorithm algorithm)
 	case LIBSHA2_512_224: return 28;
 	case LIBSHA2_512_256: return 32;
 	default:
-		return errno = EINVAL, 0;
+		errno = EINVAL;
+		return 0;
 	}
 }

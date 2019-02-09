@@ -20,15 +20,15 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const char *restrict buf
 		return 0;
 	}
 
-	if (*(int *)buf) { /* version */
+	if (*(const int *)buf) { /* version */
 		errno = EINVAL;
 		return 0;
 	}
 	off += sizeof(int);
 
-	state->algorithm = *(enum libsha2_algorithm *)&buf[off];
+	state->algorithm = *(const enum libsha2_algorithm *)&buf[off];
 	off += sizeof(enum libsha2_algorithm);
-	state->message_size = *(size_t *)&buf[off];
+	state->message_size = *(const size_t *)&buf[off];
 	off += sizeof(size_t);
 
 	switch (state->algorithm) {
@@ -73,7 +73,7 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const char *restrict buf
 	}
 	memcpy(state->chunk, &buf[off], sizeof(state->chunk));
 	off += sizeof(state->chunk);
-	state->chunk_size = *(size_t *)&buf[off];
+	state->chunk_size = *(const size_t *)&buf[off];
 	off += sizeof(size_t);
 
 	return off;
