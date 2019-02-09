@@ -64,6 +64,31 @@ libsha2.a: $(OBJ)
 	$(AR) rc $@ $?
 	$(AR) -s $@
 
+install:
+	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"
+	mkdir -p -- "$(DESTDIR)$(PREFIX)/include"
+	mkdir -p -- "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
+	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man0"
+	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
+	cp -- libsha2.a "$(DESTDIR)$(PREFIX)/lib"
+	cp -- libsha2.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)"
+	ln -sf -- "libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR)"
+	ln -sf -- "libsha2.$(LIBEXT).$(LIB_MAJOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
+	cp -- libsha2.h "$(DESTDIR)$(PREFIX)/include"
+	cp -- $(MAN0) "$(DESTDIR)$(MANPREFIX)/man0"
+	cp -- $(MAN3) "$(DESTDIR)$(MANPREFIX)/man3"
+	cp -- LICENSE "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
+
+uninstall:
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.a"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libsha2.h"
+	-cd -- "$(DESTDIR)$(MANPREFIX)/man0" && rm -f -- $(MAN0)
+	-cd -- "$(DESTDIR)$(MANPREFIX)/man3" && rm -f -- $(MAN3)
+	-rm -rf -- "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
+
 clean:
 	-rm -f -- *.o *.lo *.su *.a *.so
 
