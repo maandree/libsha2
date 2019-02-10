@@ -1,0 +1,5 @@
+LIBEXT   = so
+LIBFLAGS = -shared -Wl,-soname,libsha2.$(LIBEXT).$(LIB_MAJOR)
+
+LIBMAJOREXT = $(LIBEXT).$(LIB_MAJOR)
+LIBMINOREXT = $(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)

@@ -2,12 +2,15 @@
 
 CONFIGFILE = config.mk
 
+OSCONFIGFILE = linux.mk
+# Change to macos.mk for Mac OS
+
 LIB_MAJOR = 1
 LIB_MINOR = 0
 LIB_VERSION = $(LIB_MAJOR).$(LIB_MINOR)
 
 include $(CONFIGFILE)
-
+include $(OSCONFIGFILE)
 
 HDR =\
 	libsha2.h\
@@ -87,9 +90,9 @@ install:
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man0"
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
 	cp -- libsha2.a "$(DESTDIR)$(PREFIX)/lib"
-	cp -- libsha2.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)"
-	ln -sf -- "libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR)"
-	ln -sf -- "libsha2.$(LIBEXT).$(LIB_MAJOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
+	cp -- libsha2.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
+	ln -sf -- "libsha2.$(LIBMINOREXT).$(LIB_MINOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMAJOREXT)"
+	ln -sf -- "libsha2.$(LIBMAJOREXT)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
 	cp -- libsha2.h "$(DESTDIR)$(PREFIX)/include"
 	cp -- $(MAN0) "$(DESTDIR)$(MANPREFIX)/man0"
 	cp -- $(MAN3) "$(DESTDIR)$(MANPREFIX)/man3"
@@ -98,8 +101,8 @@ install:
 uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.a"
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
-	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR)"
-	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT).$(LIB_MAJOR).$(LIB_MINOR)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMAJOREXT)"
+	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libsha2.h"
 	-cd -- "$(DESTDIR)$(MANPREFIX)/man0" && rm -f -- $(MAN0)
 	-cd -- "$(DESTDIR)$(MANPREFIX)/man3" && rm -f -- $(MAN3)
