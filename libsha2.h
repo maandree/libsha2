@@ -197,7 +197,7 @@ void libsha2_update(struct libsha2_state *restrict, const char *restrict, size_t
 #if defined(__GNUC__)
 __attribute__((__nonnull__(1, 4), __nothrow__))
 #endif
-void libsha2_digest(struct libsha2_state *restrict, const char *restrict, size_t, char *);
+void libsha2_digest(struct libsha2_state *restrict, const char *, size_t, char *);
 
 /**
  * Calculate the checksum for a file,

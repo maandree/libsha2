@@ -1,10 +1,12 @@
 /* See LICENSE file for copyright and license details. */
 #include "libsha2.h"
 
+#include <sys/wait.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 
 #define test(EXPR)\
@@ -64,9 +66,12 @@
 int
 main(int argc, char *argv[])
 {
-	char buf[8096], str[1024];
+	char buf[8096], str[2048];
 	struct libsha2_state s;
-	int skip_huge;
+	int skip_huge, fds[2], status;
+	size_t i, j, n, len;
+	ssize_t r;
+	pid_t pid;
 
 	skip_huge = (argc == 2 && !strcmp(argv[1], "skip-huge"));
 
@@ -216,13 +221,90 @@ main(int argc, char *argv[])
 	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512,
 	            "8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909");
 
+	test_repeated(0x41, 1000, LIBSHA2_512_224, "3000c31a7ab8e9c760257073c4d3be370fab6d1d28eb027c6d874f29");
 	test_custom("abc", LIBSHA2_512_224, "4634270f707b6a54daae7530460842e20e37ed265ceee9a43e8924aa");
 	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512_224,
 	            "23fec5bb94d60b23308192640b0c453335d664734fe40e7268674af9");
 
+	test_repeated(0x41, 1000, LIBSHA2_512_256, "6ad592c8991fa0fc0fc78b6c2e73f3b55db74afeb1027a5aeacb787fb531e64a");
 	test_custom("abc", LIBSHA2_512_256, "53048e2681941ef99b2e29b76b4c7dabe4c2d0c634fc6d46e0e2f13107e7af23");
 	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512_256,
 	            "3928e184fb8690f840da3988121d31be65cb9d3ef83ee6146feac861e19b563a");
+
+	for (i = 0; i < 1000; i++) {
+		for (j = 0; j < 6; j++) {
+			memset(buf, 0x41, 1000);
+			test(!libsha2_init(&s, (enum libsha2_algorithm)j));
+			libsha2_update(&s, buf, i * 8);
+			libsha2_digest(&s, buf, (1000 - i) * 8, buf);
+			libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
+			test_str(str, ((const char *[]){
+				"a8d0c66b5c6fdfd836eb3c6d04d32dfe66c3b1f168b488bf4c9c66ce",
+				"c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4",
+				"7df01148677b7f18617eee3a23104f0eed6bb8c90a6046f715c9445ff43c30d69e9e7082de39c3452fd1d3afd9ba0689",
+				"329c52ac62d1fe731151f2b895a00475445ef74f50b979c6f7bb7cae349328c1d4cb4f7261a0ab43f936a24b000651d4a824fcdd577f211aef8f806b16afe8af",
+				"3000c31a7ab8e9c760257073c4d3be370fab6d1d28eb027c6d874f29",
+				"6ad592c8991fa0fc0fc78b6c2e73f3b55db74afeb1027a5aeacb787fb531e64a"
+			})[j]);
+
+			memset(buf, 0x41, 1000);
+			test(!libsha2_init(&s, (enum libsha2_algorithm)j));
+			libsha2_update(&s, buf, i * 8);
+			libsha2_update(&s, buf, (1000 - i) * 8);
+			libsha2_digest(&s, NULL, 0, buf);
+			libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
+			test_str(str, ((const char *[]){
+				"a8d0c66b5c6fdfd836eb3c6d04d32dfe66c3b1f168b488bf4c9c66ce",
+				"c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4",
+				"7df01148677b7f18617eee3a23104f0eed6bb8c90a6046f715c9445ff43c30d69e9e7082de39c3452fd1d3afd9ba0689",
+				"329c52ac62d1fe731151f2b895a00475445ef74f50b979c6f7bb7cae349328c1d4cb4f7261a0ab43f936a24b000651d4a824fcdd577f211aef8f806b16afe8af",
+				"3000c31a7ab8e9c760257073c4d3be370fab6d1d28eb027c6d874f29",
+				"6ad592c8991fa0fc0fc78b6c2e73f3b55db74afeb1027a5aeacb787fb531e64a",
+			})[j]);
+
+			if (!i)
+				continue;
+
+			memset(buf, 0x41, 1000);
+			test(!libsha2_init(&s, (enum libsha2_algorithm)j));
+			for (n = 0; n + i < 1000; n += i) {
+				libsha2_update(&s, buf, i * 8);
+				test((len = libsha2_marshal(&s, NULL)) && len <= sizeof(str));
+				test(libsha2_marshal(&s, str) == len);
+				memset(&s, 0, sizeof(s));
+				test(libsha2_unmarshal(&s, str, sizeof(s)) == len);
+			}
+			libsha2_digest(&s, buf, (1000 - n) * 8, buf);
+			libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
+			test_str(str, ((const char *[]){
+				"a8d0c66b5c6fdfd836eb3c6d04d32dfe66c3b1f168b488bf4c9c66ce",
+				"c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4",
+				"7df01148677b7f18617eee3a23104f0eed6bb8c90a6046f715c9445ff43c30d69e9e7082de39c3452fd1d3afd9ba0689",
+				"329c52ac62d1fe731151f2b895a00475445ef74f50b979c6f7bb7cae349328c1d4cb4f7261a0ab43f936a24b000651d4a824fcdd577f211aef8f806b16afe8af",
+				"3000c31a7ab8e9c760257073c4d3be370fab6d1d28eb027c6d874f29",
+				"6ad592c8991fa0fc0fc78b6c2e73f3b55db74afeb1027a5aeacb787fb531e64a",
+			})[j]);
+		}
+	}
+
+	test(!errno);
+
+	test(!pipe(fds));
+	test((pid = fork()) >= 0);
+	if (!pid) {
+		close(fds[0]);
+		memset(buf, 0x41, 1000);
+		for (n = 1000; n; n -= (size_t)r)
+			test((r = write(fds[1], buf, n < 8 ? n : 8)) > 0);
+		exit(0);
+	}
+	close(fds[1]);
+	test(!libsha2_sum_fd(fds[0], LIBSHA2_256, buf));
+	test(waitpid(pid, &status, 0) == pid);
+	test(!status);
+	close(fds[0]);
+	libsha2_behex_lower(str, buf, libsha2_algorithm_output_size(LIBSHA2_256));
+	test_str(str, "c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4");
 
 	test(!errno);
 

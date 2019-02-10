@@ -11,7 +11,7 @@
  * @param  output   The output buffer for the hash
  */
 void
-libsha2_digest(struct libsha2_state *restrict state, const char *restrict message, size_t msglen, char *output)
+libsha2_digest(struct libsha2_state *restrict state, const char *message, size_t msglen, char *output)
 {
 	size_t off, i, n;
 
