@@ -12,7 +12,7 @@
  * @return             Zero on success, -1 on error
  */
 int
-libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, char *restrict hashsum)
+libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, void *restrict hashsum)
 {
 	struct libsha2_state state;
 	ssize_t r;

@@ -10,8 +10,9 @@
  * @return         The number of bytes marshalled to `buf`
  */
 size_t
-libsha2_marshal(const struct libsha2_state *restrict state, char *restrict buf)
+libsha2_marshal(const struct libsha2_state *restrict state, void *restrict buf_)
 {
+	char *restrict buf = buf_;
 	size_t off = 0;
 
 	if (buf)

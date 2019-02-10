@@ -11,17 +11,18 @@
  * @param  hashsum  The hashsum to convert
  */
 void
-libsha2_unhex(char *restrict output, const char *restrict hashsum)
+libsha2_unhex(void *restrict output_, const char *restrict hashsum)
 {
+	unsigned char *restrict output = output_;
 	size_t n = strlen(hashsum) / 2;
-	char a, b;
+	unsigned char a, b;
 	while (n--) {
-		a = hashsum[2 * n + 0];
-		b = hashsum[2 * n + 1];
+		a = ((const unsigned char *)hashsum)[2 * n + 0];
+		b = ((const unsigned char *)hashsum)[2 * n + 1];
 
-		a = (char)((a & 15) + (a > '9' ? 9 : 0));
-		b = (char)((b & 15) + (b > '9' ? 9 : 0));
+		a = (unsigned char)((a & 15) + (a > '9' ? 9 : 0));
+		b = (unsigned char)((b & 15) + (b > '9' ? 9 : 0));
 
-		output[n] = (char)((a << 4) | b);
+		output[n] = (unsigned char)((a << 4) | b);
 	}
 }

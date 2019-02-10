@@ -5,7 +5,7 @@ libsha2_digest \- Get the result of a SHA 2 hashing
 .nf
 #include <libsha2.h>
 
-void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const char *\fImessage\fP, size_t \fImsglen\fP, char *\fIoutput\fP);
+void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const void *\fImessage\fP, size_t \fImsglen\fP, void *\fIoutput\fP);
 .fi
 .PP
 Link with

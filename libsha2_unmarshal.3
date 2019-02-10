@@ -5,7 +5,7 @@ libsha2_unmarshal \- Unmarshal a SHA 2 hashing state
 .nf
 #include <libsha2.h>
 
-size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fIbuf\fP, size_t \fIbufsize\fP);
+size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fIbuf\fP, size_t \fIbufsize\fP);
 .fi
 .PP
 Link with

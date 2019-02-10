@@ -11,8 +11,10 @@
  * @param  output   The output buffer for the hash
  */
 void
-libsha2_digest(struct libsha2_state *restrict state, const char *message, size_t msglen, char *output)
+libsha2_digest(struct libsha2_state *restrict state, const void *message_, size_t msglen, void *output_)
 {
+	const char *message = message_;
+	unsigned char *output = output_;
 	size_t off, i, n;
 
 	if (msglen & ~(size_t)7) {
@@ -23,8 +25,7 @@ libsha2_digest(struct libsha2_state *restrict state, const char *message, size_t
 
 	off = (state->message_size / 8) % state->chunk_size;
 	if (msglen) {
-		state->chunk[off] = (unsigned char)*message;
-		state->chunk[off] <<= 8 - msglen;
+		state->chunk[off] = (unsigned char)(*message << (8 - (int)msglen));
 		state->chunk[off] |= (unsigned char)(1 << (7 - msglen));
 		state->chunk[off] &= (unsigned char)~((1 << (7 - msglen)) - 1);
 		state->message_size += msglen;
@@ -53,21 +54,21 @@ libsha2_digest(struct libsha2_state *restrict state, const char *message, size_t
 	n = libsha2_algorithm_output_size(state->algorithm);
 	if (state->algorithm <= LIBSHA2_256) {
 		for (i = 0, n /= 4; i < n; i++) {
-			output[4 * i + 0] = (char)(state->h.b32[i] >> 24);
-			output[4 * i + 1] = (char)(state->h.b32[i] >> 16);
-			output[4 * i + 2] = (char)(state->h.b32[i] >>  8);
-			output[4 * i + 3] = (char)(state->h.b32[i] >>  0);
+			output[4 * i + 0] = (unsigned char)(state->h.b32[i] >> 24);
+			output[4 * i + 1] = (unsigned char)(state->h.b32[i] >> 16);
+			output[4 * i + 2] = (unsigned char)(state->h.b32[i] >>  8);
+			output[4 * i + 3] = (unsigned char)(state->h.b32[i] >>  0);
 		}
 	} else {
 		for (i = 0, n = (n + 7) / 8; i < n; i++) {
-			output[8 * i + 0] = (char)(state->h.b64[i] >> 56);
-			output[8 * i + 1] = (char)(state->h.b64[i] >> 48);
-			output[8 * i + 2] = (char)(state->h.b64[i] >> 40);
-			output[8 * i + 3] = (char)(state->h.b64[i] >> 32);
-			output[8 * i + 4] = (char)(state->h.b64[i] >> 24);
-			output[8 * i + 5] = (char)(state->h.b64[i] >> 16);
-			output[8 * i + 6] = (char)(state->h.b64[i] >>  8);
-			output[8 * i + 7] = (char)(state->h.b64[i] >>  0);
+			output[8 * i + 0] = (unsigned char)(state->h.b64[i] >> 56);
+			output[8 * i + 1] = (unsigned char)(state->h.b64[i] >> 48);
+			output[8 * i + 2] = (unsigned char)(state->h.b64[i] >> 40);
+			output[8 * i + 3] = (unsigned char)(state->h.b64[i] >> 32);
+			output[8 * i + 4] = (unsigned char)(state->h.b64[i] >> 24);
+			output[8 * i + 5] = (unsigned char)(state->h.b64[i] >> 16);
+			output[8 * i + 6] = (unsigned char)(state->h.b64[i] >>  8);
+			output[8 * i + 7] = (unsigned char)(state->h.b64[i] >>  0);
 		}
 	}
 }

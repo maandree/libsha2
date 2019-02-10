@@ -5,7 +5,7 @@ libsha2_update \- Feed data into a SHA 2 algorithm
 .nf
 #include <libsha2.h>
 
-void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP);
+void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fImessage\fP, size_t \fImsglen\fP);
 .fi
 .PP
 Link with

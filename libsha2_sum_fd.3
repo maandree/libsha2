@@ -14,7 +14,7 @@ enum libsha2_algorithm {
 	LIBSHA2_512_256  /* SHA-512/256 */
 };
 
-int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, char *restrict \fIhashsum\fP);
+int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, void *restrict \fIhashsum\fP);
 .fi
 .PP
 Link with

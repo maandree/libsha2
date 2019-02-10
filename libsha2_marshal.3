@@ -5,7 +5,7 @@ libsha2_marshal \- Marshal a SHA 2 hashing state
 .nf
 #include <libsha2.h>
 
-size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, char *restrict \fIbuf\fP);
+size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
 .fi
 .PP
 Link with

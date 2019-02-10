@@ -10,8 +10,9 @@
  * @param  msglen   The length of the message
  */
 void
-libsha2_update(struct libsha2_state *restrict state, const char *restrict message, size_t msglen)
+libsha2_update(struct libsha2_state *restrict state, const void *restrict message_, size_t msglen)
 {
+	const char *restrict message = message_;
 	size_t n, off;
 
 	off = (state->message_size / 8) % state->chunk_size;

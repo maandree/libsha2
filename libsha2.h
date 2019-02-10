@@ -141,10 +141,50 @@ struct libsha2_state {
 
 
 /**
+ * Data structure that describes the state of a HMAC hashing process
+ * 
+ * Data that could just as well be allocated (with `auto`) are
+ * allocated here so that is is easier to wipe the data without
+ * exposing two versions of each function: one to wipe data,
+ * and one not to wipe data to gain speed, now you can use use
+ * `explicit_bzero` (or `memset`) when you are done.
+ */
+struct libsha2_hmac_state {
+	/**
+	 * State of the underlaying hash function
+	 */
+	struct libsha2_state sha2_state;
+
+	/**
+	 * The output size of the underlaying
+	 * hash algorithm, in bits
+	 */
+	size_t outsize;
+
+	/**
+	 * Whether `.sha2_state` has been initialised
+	 * and whether the `ipad` has been feed into
+	 * the algorithm
+	 */
+	unsigned char inited;
+
+	/**
+	 * Inner pad XOR processed key
+	 */
+	unsigned char ipad[128];
+
+	/**
+	 * Outer pad XOR processed key
+	 */
+	unsigned char opad[128];
+};
+
+
+/**
  * Initialise a state
  * 
- * @parma   state      The state that should be initialised
- * @parma   algorithm  The hashing algorithm
+ * @param   state      The state that should be initialised
+ * @param   algorithm  The hashing algorithm
  * @return             Zero on success, -1 on error
  */
 #if defined(__GNUC__)
@@ -155,7 +195,7 @@ int libsha2_init(struct libsha2_state *restrict, enum libsha2_algorithm);
 /**
  * Get the output size of the algorithm specified for a state
  * 
- * @parma   state  The state
+ * @param   state  The state
  * @return         The number of bytes in the output, zero on error
  */
 #if defined(__GNUC__)
@@ -166,7 +206,7 @@ size_t libsha2_state_output_size(const struct libsha2_state *restrict);
 /**
  * Get the output size of an algorithm
  * 
- * @parma   algorithm  The hashing algorithm
+ * @param   algorithm  The hashing algorithm
  * @return             The number of bytes in the output, zero on error
  */
 #if defined(__GNUC__)
@@ -184,7 +224,7 @@ size_t libsha2_algorithm_output_size(enum libsha2_algorithm);
 #if defined(__GNUC__)
 __attribute__((__nonnull__, __nothrow__))
 #endif
-void libsha2_update(struct libsha2_state *restrict, const char *restrict, size_t);
+void libsha2_update(struct libsha2_state *restrict, const void *restrict, size_t);
 
 /**
  * Absorb the last part of the message and output a hash
@@ -197,7 +237,7 @@ void libsha2_update(struct libsha2_state *restrict, const char *restrict, size_t
 #if defined(__GNUC__)
 __attribute__((__nonnull__(1, 4), __nothrow__))
 #endif
-void libsha2_digest(struct libsha2_state *restrict, const char *, size_t, char *);
+void libsha2_digest(struct libsha2_state *restrict, const void *, size_t, void *);
 
 /**
  * Calculate the checksum for a file,
@@ -211,7 +251,7 @@ void libsha2_digest(struct libsha2_state *restrict, const char *, size_t, char *
 #if defined(__GNUC__)
 __attribute__((__nonnull__, __leaf__))
 #endif
-int libsha2_sum_fd(int, enum libsha2_algorithm, char *restrict);
+int libsha2_sum_fd(int, enum libsha2_algorithm, void *restrict);
 
 /**
  * Convert a binary hashsum to lower case hexadecimal representation
@@ -223,7 +263,7 @@ int libsha2_sum_fd(int, enum libsha2_algorithm, char *restrict);
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-void libsha2_behex_lower(char *restrict, const char *restrict, size_t);
+void libsha2_behex_lower(char *restrict, const void *restrict, size_t);
 
 /**
  * Convert a binary hashsum to upper case hexadecimal representation
@@ -235,7 +275,7 @@ void libsha2_behex_lower(char *restrict, const char *restrict, size_t);
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-void libsha2_behex_upper(char *restrict, const char *restrict, size_t);
+void libsha2_behex_upper(char *restrict, const void *restrict, size_t);
 
 /**
  * Convert a hexadecimal hashsum (both lower case, upper
@@ -248,7 +288,7 @@ void libsha2_behex_upper(char *restrict, const char *restrict, size_t);
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-void libsha2_unhex(char *restrict, const char *restrict);
+void libsha2_unhex(void *restrict, const char *restrict);
 
 /**
  * Marshal a state into a buffer
@@ -260,7 +300,7 @@ void libsha2_unhex(char *restrict, const char *restrict);
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__(1), __nothrow__))
 #endif
-size_t libsha2_marshal(const struct libsha2_state *restrict, char *restrict);
+size_t libsha2_marshal(const struct libsha2_state *restrict, void *restrict);
 
 /**
  * Unmarshal a state from a buffer
@@ -273,7 +313,55 @@ size_t libsha2_marshal(const struct libsha2_state *restrict, char *restrict);
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-size_t libsha2_unmarshal(struct libsha2_state *restrict, const char *restrict, size_t);
+size_t libsha2_unmarshal(struct libsha2_state *restrict, const void *restrict, size_t);
+
+/**
+ * Initialise an HMAC state
+ * 
+ * @param   state        The state that should be initialised
+ * @param   algorithm    The hashing algorithm
+ * @param   key          The key
+ * @param   key_length   The length of key, in bits
+ * @return               Zero on success, -1 on error
+ */
+#if defined(__GNUC__)
+__attribute__((__leaf__, __nonnull__, __nothrow__))
+#endif
+int libsha2_hmac_init(struct libsha2_hmac_state *restrict, enum libsha2_algorithm, const void *restrict, size_t);
+
+/**
+ * Feed data into the HMAC algorithm
+ * 
+ * @param   state  The state of the algorithm
+ * @param   data   Data to feed into the algorithm
+ * @param   n      The number of bytes to feed into the
+ *                 algorithm, this must be a multiple of 8
+ * @return         Zero on success, -1 on error
+ */
+#if defined(__GNUC__)
+__attribute__((__leaf__, __nonnull__, __nothrow__))
+#endif
+int libsha2_hmac_update(struct libsha2_hmac_state *restrict, const void *restrict, size_t);
+
+/**
+ * Feed data into the HMAC algorithm and
+ * get the result
+ * 
+ * The state of the algorithm will be reset and
+ * `libsha2_hmac_update` and `libsha2_hmac_update`
+ * can be called again
+ * 
+ * @param   state   The state of the algorithm
+ * @param   data    Data to feed into the algorithm
+ * @param   n       The number of bytes to feed into the algorithm
+ * @param   output  The output buffer for the hash, it will be as
+ *                  large as for the underlaying hash algorithm
+ * @return          Zero on success, -1 on error
+ */
+#if defined(__GNUC__)
+__attribute__((__leaf__, __nonnull__, __nothrow__))
+#endif
+int libsha2_hmac_digest(struct libsha2_hmac_state *restrict, const void *, size_t, void *);
 
 
 #endif

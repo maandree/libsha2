@@ -21,14 +21,14 @@ struct libsha2_state {
 int libsha2_init(struct libsha2_state *restrict \fIstate\fP, enum libsha2_algorithm \fIalgorithm\fP);
 size_t libsha2_state_output_size(const struct libsha2_state *restrict \fIstate\fP);
 size_t libsha2_algorithm_output_size(enum libsha2_algorithm \fIalgorithm\fP);
-void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP);
-void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fImessage\fP, size_t \fImsglen\fP, char *\fIoutput\fP);
-int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, char *restrict \fIhashsum\fP);
-void libsha2_behex_lower(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
-void libsha2_behex_upper(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP, size_t \fIn\fP);
-void libsha2_unhex(char *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP);
-size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, char *restrict \fIbuf\fP);
-size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const char *restrict \fIbuf\fP, size_t \fIbufsize\fP);
+void libsha2_update(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fImessage\fP, size_t \fImsglen\fP);
+void libsha2_digest(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fImessage\fP, size_t \fImsglen\fP, void *\fIoutput\fP);
+int libsha2_sum_fd(int \fIfd\fP, enum libsha2_algorithm \fIalgorithm\fP, void *restrict \fIhashsum\fP);
+void libsha2_behex_lower(char *restrict \fIoutput\fP, const void *restrict \fIhashsum\fP, size_t \fIn\fP);
+void libsha2_behex_upper(char *restrict \fIoutput\fP, const void *restrict \fIhashsum\fP, size_t \fIn\fP);
+void libsha2_unhex(void *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP);
+size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
+size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fIbuf\fP, size_t \fIbufsize\fP);
 .fi
 .PP
 Link with

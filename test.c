@@ -36,17 +36,17 @@
 
 #define test_repeated_huge(CHR, N, ALGO, EXPECTED)\
 	do {\
-		size_t n = N;\
+		size_t n__ = N;\
 		if (skip_huge)\
 			break;\
 		memset(buf, CHR, sizeof(buf));\
 		test(!libsha2_init(&s, ALGO));\
 		fprintf(stderr, "processing huge message: 0 %%\n");\
-		for (; n > sizeof(buf); n -= sizeof(buf)) {\
+		for (; n__ > sizeof(buf); n__ -= sizeof(buf)) {\
 			libsha2_update(&s, buf, sizeof(buf) * 8);\
-			fprintf(stderr, "\033[A\033[Kprocessing huge message: %zu %%\n", ((N) - n) * 100 / (N));\
+			fprintf(stderr, "\033[A\033[Kprocessing huge message: %zu %%\n", ((N) - n__) * 100 / (N));\
 		}\
-		libsha2_update(&s, buf, n * 8);\
+		libsha2_update(&s, buf, n__ * 8);\
 		fprintf(stderr, "\033[A\033[K");\
 		fflush(stderr);\
 		libsha2_digest(&s, NULL, 0, buf);\

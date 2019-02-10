@@ -11,8 +11,9 @@
  * @return           The number of read bytes, 0 on failure
  */
 size_t
-libsha2_unmarshal(struct libsha2_state *restrict state, const char *restrict buf, size_t bufsize)
+libsha2_unmarshal(struct libsha2_state *restrict state, const void *restrict buf_, size_t bufsize)
 {
+	const char *restrict buf = buf_;
 	size_t off = 0;
 
 	if (bufsize < sizeof(int) + sizeof(enum libsha2_algorithm) + sizeof(size_t)) {
