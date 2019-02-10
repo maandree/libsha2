@@ -20,6 +20,7 @@ OBJ =\
 	digest.o\
 	init.o\
 	marshal.o\
+	process.o\
 	state_output_size.o\
 	sum_fd.o\
 	unhex.o\
@@ -43,7 +44,7 @@ MAN3 =\
 	libsha2_update.3
 
 
-all: libsha2.a libsha2.$(LIBEXT)
+all: libsha2.a libsha2.$(LIBEXT) test
 $(OBJ): $(@:.o=.c) $(HDR)
 $(OBJ:.o=.lo): $(@:.lo=.c) $(HDR)
 
@@ -53,13 +54,19 @@ $(OBJ:.o=.lo): $(@:.lo=.c) $(HDR)
 .c.lo:
 	$(CC) -fPIC -c -o $@ $< $(CFLAGS)
 
+test: test.o libsha2.a
+	$(CC) -o $@ test.o libsha2.a $(LDFLAGS)
+
 libsha2.$(LIBEXT): $(OBJ:.o=.lo)
 	$(CC) $(LIBFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 libsha2.a: $(OBJ)
 	-rm -f -- $@
-	$(AR) rc $@ $?
+	$(AR) rc $@ $(OBJ)
 	$(AR) -s $@
+
+check: test
+	./test
 
 install:
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"

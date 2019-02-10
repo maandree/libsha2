@@ -103,7 +103,8 @@ libsha2_init(struct libsha2_state *restrict state, enum libsha2_algorithm algori
 	case LIBSHA2_512_224: memcpy(state->h.b64, H_512_224, sizeof(H_512_224)); break;
 	case LIBSHA2_512_256: memcpy(state->h.b64, H_512_256, sizeof(H_512_256)); break;
 	default:
-		return errno = EINVAL, -1;
+		errno = EINVAL;
+		return -1;
 	}
 
 	/* Set round constants, and chunk size. */

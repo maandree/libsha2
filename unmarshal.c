@@ -67,14 +67,19 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const char *restrict buf
 		return 0;
 	}
 
-	if (bufsize - off < sizeof(state->chunk) + sizeof(size_t)) {
+	if (bufsize - off < sizeof(size_t)) {
 		errno = EINVAL;
 		return 0;
 	}
-	memcpy(state->chunk, &buf[off], sizeof(state->chunk));
-	off += sizeof(state->chunk);
 	state->chunk_size = *(const size_t *)&buf[off];
 	off += sizeof(size_t);
+
+	if (bufsize - off < state->chunk_size) {
+		errno = EINVAL;
+		return 0;
+	}
+	memcpy(state->chunk, &buf[off], state->chunk_size);
+	off += state->chunk_size;
 
 	return off;
 }

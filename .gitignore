@@ -1,7 +1,4 @@
-_/
-\#*\#
-.*
-!.git*
+*\#*
 *~
 *.bak
 *.swp
@@ -11,10 +8,5 @@ _/
 *.so
 *.su
 *.a
-*.gch
-*.info
-*.pdf
-*.ps
-*.dvi
-*.test
 *.lo
+/test

@@ -46,6 +46,8 @@ None.
 .SH NOTES
 None.
 .SH BUGS
-None.
+Both GCC and Clang optimises out setting
+.I errno
+if using too high optimisation.
 .SH SEE ALSO
 .BR libsha2_state_output_size (3)

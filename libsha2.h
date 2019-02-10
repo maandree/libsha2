@@ -49,12 +49,6 @@ enum libsha2_algorithm {
  * exposing two versions of each function: one to wipe data,
  * and one not to wipe data to gain speed, now you can use use
  * `explicit_bzero` (or `memset`) when you are done.
- * 
- * This data structure is flat (it contains dynamic pointers)
- * and can be marshalled and unmarshalled naïvely, and does
- * not need destroyed; however, if you when to marshall it
- * using as little memory as possible, this are comments
- * about data that does not need to be mashalled
  */
 struct libsha2_state {
 	/**
@@ -131,14 +125,6 @@ struct libsha2_state {
 	 * to 64 bytes on 32-bit algorithms
 	 */
 	unsigned char chunk[128];
-
-	/**
-	 * Space for storing the last bits and
-	 * the padding
-	 * 
-	 * Does not need to be marshalled
-	 */
-	char appendix[256];
 
 	/**
 	 * The size of the chunks, in bytes
