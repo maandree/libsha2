@@ -29,9 +29,13 @@ libsha2_hmac_init(struct libsha2_hmac_state *restrict state, enum libsha2_algori
 	if (keylen <= state->sha2_state.chunk_size * 8) {
 		memset(state->ipad, 0x36, sizeof(state->ipad));
 		memset(state->opad, 0x5C, sizeof(state->opad));
-		for (i = 0, keylen /= 8; i < keylen; i++) {
+		for (i = 0; i < keylen / 8; i++) {
 			state->ipad[i] ^= key[i];
 			state->opad[i] ^= key[i];
+		}
+		if (keylen & 7) {
+			state->ipad[i] ^= (unsigned char)(key[i] << (8 - (keylen & 7)));
+			state->opad[i] ^= (unsigned char)(key[i] << (8 - (keylen & 7)));
 		}
 	} else {
 		memset(state->ipad, 0, sizeof(state->ipad));
