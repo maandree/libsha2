@@ -23,30 +23,30 @@ libsha2_digest(struct libsha2_state *restrict state, const char *restrict messag
 
 	off = (state->message_size / 8) % state->chunk_size;
 	if (msglen) {
-		state->chunk[off] = *message;
-		state->chunk[off] |= (char)(1 << (7 - msglen));
-		state->chunk[off] &= (char)~((1 << (7 - msglen)) - 1);
+		state->chunk[off] = (unsigned char)*message;
+		state->chunk[off] |= (unsigned char)(1 << (7 - msglen));
+		state->chunk[off] &= (unsigned char)~((1 << (7 - msglen)) - 1);
 		state->message_size += msglen;
 	} else {
 		state->chunk[off] = 0x80;
 	}
 	off += 1;
 
-	if (off > state->chunk_size - 8 * (1 + (state->algorithm > LIBSHA2_256))) {
+	if (off > state->chunk_size - (size_t)8 * (size_t)(1 + (state->algorithm > LIBSHA2_256))) {
 		memset(state->chunk + off, 0, state->chunk_size - off);
 		off = 0;
 		libsha2_process(state, state->chunk);
 	}
 
 	memset(state->chunk + off, 0, state->chunk_size - 8 - off);
-	state->chunk[state->chunk_size - 8] = (char)(state->message_size >> 56);
-	state->chunk[state->chunk_size - 7] = (char)(state->message_size >> 48);
-	state->chunk[state->chunk_size - 6] = (char)(state->message_size >> 40);
-	state->chunk[state->chunk_size - 5] = (char)(state->message_size >> 32);
-	state->chunk[state->chunk_size - 4] = (char)(state->message_size >> 24);
-	state->chunk[state->chunk_size - 3] = (char)(state->message_size >> 16);
-	state->chunk[state->chunk_size - 2] = (char)(state->message_size >>  8);
-	state->chunk[state->chunk_size - 1] = (char)(state->message_size >>  0);
+	state->chunk[state->chunk_size - 8] = (unsigned char)(state->message_size >> 56);
+	state->chunk[state->chunk_size - 7] = (unsigned char)(state->message_size >> 48);
+	state->chunk[state->chunk_size - 6] = (unsigned char)(state->message_size >> 40);
+	state->chunk[state->chunk_size - 5] = (unsigned char)(state->message_size >> 32);
+	state->chunk[state->chunk_size - 4] = (unsigned char)(state->message_size >> 24);
+	state->chunk[state->chunk_size - 3] = (unsigned char)(state->message_size >> 16);
+	state->chunk[state->chunk_size - 2] = (unsigned char)(state->message_size >>  8);
+	state->chunk[state->chunk_size - 1] = (unsigned char)(state->message_size >>  0);
 	libsha2_process(state, state->chunk);
 
 	n = libsha2_algorithm_output_size(state->algorithm);
