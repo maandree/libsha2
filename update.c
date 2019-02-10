@@ -10,22 +10,29 @@
  * @param  msglen   The length of the message
  */
 void
-libsha2_update(struct libsha2_state *restrict state, const char *restrict message, size_t msglen) /* TODO avoid coping */
+libsha2_update(struct libsha2_state *restrict state, const char *restrict message, size_t msglen)
 {
-	size_t n, off, mlen;
+	size_t n, off;
 
+	off = (state->message_size / 8) % state->chunk_size;
+	state->message_size += msglen;
 	msglen /= 8;
-	mlen = state->message_size / 8;
 
-	while (msglen) {
-		off = mlen % state->chunk_size;
-		n = state->chunk_size - off;
-		n = n < msglen ? n : msglen;
+	if (off) {
+		n = msglen < state->chunk_size - off ? msglen : state->chunk_size - off;
 		memcpy(state->chunk + off, message, n);
 		if (off + n == state->chunk_size)
 			libsha2_process(state, state->chunk);
-		message += n, mlen += n, msglen -= n;
+		message += n;
+		msglen -= n;
 	}
 
-	state->message_size = mlen * 8;
+	while (msglen >= state->chunk_size) {
+		libsha2_process(state, (const unsigned char *)message);
+		message += state->chunk_size;
+		msglen -= state->chunk_size;
+	}
+
+	if (msglen)
+		memcpy(state->chunk, message, msglen);
 }
