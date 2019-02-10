@@ -63,7 +63,10 @@ Further, the
 header defines the opaque, but complete,
 .B struct libsha2_state
 which stores the selected algorithm and
-the state of the hashing. The header also
+the state of the hashing. A state can be
+securely erased by overriding all bytes
+in the structure with zeroes (or any other
+byte sequence). The header also
 defines the functions:
 .TP
 .BR libsha2_init (3)
