@@ -26,7 +26,7 @@ libsha2_hmac_init(struct libsha2_hmac_state *restrict state, enum libsha2_algori
 	}
 	state->inited = 0;
 
-	if (keylen <= state->sha2_state.chunk_size * 8) {
+	if (keylen <= (algorithm <= LIBSHA2_256 ? 64 * 8 : 128 * 8)) {
 		memset(state->ipad, 0x36, sizeof(state->ipad));
 		memset(state->opad, 0x5C, sizeof(state->opad));
 		for (i = 0; i < keylen / 8; i++) {
