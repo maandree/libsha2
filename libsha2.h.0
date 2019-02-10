@@ -1,4 +1,4 @@
-.TH LIBSHA2.H 0 2019-02-10 libjson
+.TH LIBSHA2.H 0 2019-02-10 libsha2
 .SH NAME
 libsha2.h \- SHA 2 library header
 .SH SYNOPSIS
