@@ -20,6 +20,8 @@ OBJ =\
 	digest.o\
 	hmac_digest.o\
 	hmac_init.o\
+	hmac_marshal.o\
+	hmac_unmarshal.o\
 	hmac_update.o\
 	init.o\
 	marshal.o\
