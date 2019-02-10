@@ -77,6 +77,7 @@ main(int argc, char *argv[])
 {
 	char buf[8096], str[2048];
 	struct libsha2_state s;
+	struct libsha2_hmac_state hs;
 	int skip_huge, fds[2], status;
 	size_t i, j, n, len;
 	ssize_t r;
@@ -322,6 +323,30 @@ main(int argc, char *argv[])
 	test_bits("0d", 5, LIBSHA2_224, "e3b048552c3c387bcab37f6eb06bb79b96a4aee5ff27f51531a9551c");
 	test_bits("2b", 6, LIBSHA2_224, "44b64a6dbd91d49df5af0c9f8e001b1378e1dc29c4b891350e5d7bd9");
 	test_bits("0c", 7, LIBSHA2_224, "20f25c1fe299cf337ff7ff9cc4b5b5afac076759720174a29ba79db6");
+
+	test(!libsha2_hmac_init(&hs, LIBSHA2_256, "", 0));
+	test(libsha2_hmac_state_output_size(&hs) == 32);
+	libsha2_hmac_digest(&hs, "", 0, buf);
+	libsha2_behex_lower(str, buf, libsha2_hmac_state_output_size(&hs));
+	test_str(str, "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad");
+
+	test(!libsha2_hmac_init(&hs, LIBSHA2_256, "key", 3 << 3));
+	test(libsha2_hmac_state_output_size(&hs) == 32);
+	libsha2_hmac_digest(&hs, "The quick brown fox jumps over the lazy dog",
+	                    (sizeof("The quick brown fox jumps over the lazy dog") - 1) << 3, buf);
+	libsha2_behex_lower(str, buf, libsha2_hmac_state_output_size(&hs));
+	test_str(str, "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+
+	n = sizeof("The quick brown fox jumps over the lazy dog") - 1;
+	for (i = 1; i < n; i++) {
+		test(!libsha2_hmac_init(&hs, LIBSHA2_256, "key", 3 << 3));
+		test(libsha2_hmac_state_output_size(&hs) == 32);
+		for (j = 0; j + i < n; j += i)
+			libsha2_hmac_update(&hs, &"The quick brown fox jumps over the lazy dog"[j], i << 3);
+		libsha2_hmac_digest(&hs, &"The quick brown fox jumps over the lazy dog"[j], (n - j) << 3, buf);
+		libsha2_behex_lower(str, buf, libsha2_hmac_state_output_size(&hs));
+		test_str(str, "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
+	}
 
 	test(!errno);
 
