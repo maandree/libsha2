@@ -81,8 +81,8 @@ static const uint64_t H_512_256[] = {
 /**
  * Initialise a state
  * 
- * @parma   state      The state that should be initialised
- * @parma   algorithm  The hashing algorithm
+ * @param   state      The state that should be initialised
+ * @param   algorithm  The hashing algorithm
  * @return             Zero on success, -1 on error
  */
 int

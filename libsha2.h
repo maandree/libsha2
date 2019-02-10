@@ -330,18 +330,28 @@ __attribute__((__leaf__, __nonnull__, __nothrow__))
 int libsha2_hmac_init(struct libsha2_hmac_state *restrict, enum libsha2_algorithm, const void *restrict, size_t);
 
 /**
+ * Get the output size of the algorithm specified for an HMAC state
+ * 
+ * @param   state  The state
+ * @return         The number of bytes in the output, zero on error
+ */
+#if defined(__GNUC__)
+__attribute__((__nothrow__, __nonnull__, __pure__))
+#endif
+size_t libsha2_hmac_state_output_size(const struct libsha2_hmac_state *restrict);
+
+/**
  * Feed data into the HMAC algorithm
  * 
- * @param   state  The state of the algorithm
- * @param   data   Data to feed into the algorithm
- * @param   n      The number of bytes to feed into the
- *                 algorithm, this must be a multiple of 8
- * @return         Zero on success, -1 on error
+ * @param  state  The state of the algorithm
+ * @param  data   Data to feed into the algorithm
+ * @param  n      The number of bytes to feed into the
+ *                algorithm, this must be a multiple of 8
  */
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-int libsha2_hmac_update(struct libsha2_hmac_state *restrict, const void *restrict, size_t);
+void libsha2_hmac_update(struct libsha2_hmac_state *restrict, const void *restrict, size_t);
 
 /**
  * Feed data into the HMAC algorithm and
@@ -351,17 +361,16 @@ int libsha2_hmac_update(struct libsha2_hmac_state *restrict, const void *restric
  * `libsha2_hmac_update` and `libsha2_hmac_update`
  * can be called again
  * 
- * @param   state   The state of the algorithm
- * @param   data    Data to feed into the algorithm
- * @param   n       The number of bytes to feed into the algorithm
- * @param   output  The output buffer for the hash, it will be as
- *                  large as for the underlaying hash algorithm
- * @return          Zero on success, -1 on error
+ * @param  state   The state of the algorithm
+ * @param  data    Data to feed into the algorithm
+ * @param  n       The number of bytes to feed into the algorithm
+ * @param  output  The output buffer for the hash, it will be as
+ *                 large as for the underlaying hash algorithm
  */
 #if defined(__GNUC__)
 __attribute__((__leaf__, __nonnull__, __nothrow__))
 #endif
-int libsha2_hmac_digest(struct libsha2_hmac_state *restrict, const void *, size_t, void *);
+void libsha2_hmac_digest(struct libsha2_hmac_state *restrict, const void *, size_t, void *);
 
 /**
  * Marshal an HMAC state into a buffer

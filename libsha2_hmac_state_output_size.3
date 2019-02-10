@@ -1,0 +1,40 @@
+.TH LIBSHA2_HMAC_STATE_OUTPUT_SIZE 3 2019-02-10 libjson
+.SH NAME
+libsha2_hmac_state_output_size \- Get the size of the output for a HMAC-SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+size_t libsha2_hmac_state_output_size(const struct libsha2_hmac_state *restrict \fIstate\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_hmac_state_output_size ()
+function get the output size for the
+binary output of the hash algorithm
+selected for
+.IR state .
+.SH RETURN VALUE
+The
+.BR libsha2_hmac_state_output_size ()
+function returns the output size in bytes,
+a positive number.
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+None.

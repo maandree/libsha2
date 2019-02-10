@@ -5,7 +5,7 @@
 /**
  * Get the output size of the algorithm specified for a state
  * 
- * @parma   state  The state
+ * @param   state  The state
  * @return         The number of bytes in the output, zero on error
  */
 size_t

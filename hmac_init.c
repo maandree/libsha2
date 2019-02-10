@@ -20,6 +20,10 @@ libsha2_hmac_init(struct libsha2_hmac_state *restrict state, enum libsha2_algori
 
 	state->sha2_state.algorithm = algorithm;
 	state->outsize = libsha2_algorithm_output_size(algorithm) * 8;
+	if (!state->outsize) {
+		errno = EINVAL;
+		return -1;
+	}
 	state->inited = 0;
 
 	if (keylen <= state->sha2_state.chunk_size * 8) {

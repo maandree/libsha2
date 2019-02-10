@@ -1,0 +1,54 @@
+.TH LIBSHA2_HMAC_UNMARSHAL 3 2019-02-10 libjson
+.SH NAME
+libsha2_hmac_unmarshal \- Unmarshal an HMAC-SHA 2 hashing state
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+size_t libsha2_hmac_unmarshal(struct libsha2_hmac_state *restrict \fIstate\fP, const void *restrict \fIbuf\fP, size_t \fIbufsize\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_hmac_unmarshal ()
+function unmarshal
+.I state
+from the buffer
+.IR buf .
+.I bufsize
+shall be the maximum number of bytes the
+function may read from
+.IR buf .
+.SH RETURN VALUE
+The
+.BR libsha2_hmac_unmarshal ()
+function returns the number of unmarshalled
+bytes (this number is always positive) upon
+successful completion, otherwise 0 is returned.
+.SH ERRORS
+The
+.BR libsha2_hmac_unmarshal ()
+function will fail if:
+.TP
+.B EINVAL
+.I bufsize
+is too small or the contents of
+.I buf
+is invalid or created with an incompatible
+version of the library.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_hmac_marshal (3)

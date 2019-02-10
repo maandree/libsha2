@@ -1,0 +1,42 @@
+.TH LIBSHA2_HMAC_UPDATE 3 2019-02-10 libjson
+.SH NAME
+libsha2_hmac_update \- Feed data into a HMAC-SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+void libsha2_hmac_update(struct libsha2_hmac_state *restrict \fIstate\fP, const void *restrict \fImessage\fP, size_t \fImsglen\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_hmac_update ()
+function feeds the first
+.I msglen
+.B bits
+(must equivalent to 0 modulus 8) of
+.I message
+into the hashing state of the
+.I state
+parameter.
+.SH RETURN VALUE
+None.
+.SH ERRORS
+None.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_hmac_digest (3),
+.BR libsha2_hmac_init (3)

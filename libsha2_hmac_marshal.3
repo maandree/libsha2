@@ -1,11 +1,11 @@
-.TH LIBSHA2_MARSHAL 3 2019-02-09 libjson
+.TH LIBSHA2_HMAC_MARSHAL 3 2019-02-10 libjson
 .SH NAME
-libsha2_marshal \- Marshal a SHA 2 hashing state
+libsha2_hmac_marshal \- Marshal an HMAC-SHA 2 hashing state
 .SH SYNOPSIS
 .nf
 #include <libsha2.h>
 
-size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
+size_t libsha2_hmac_marshal(const struct libsha2_hmac_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
 .fi
 .PP
 Link with
@@ -31,7 +31,7 @@ this allows new versions of the library to
 unmarshal states marshalled by older versions.
 .SH RETURN VALUE
 The
-.BR libsha2_marshal ()
+.BR libsha2_hmac_marshal ()
 function returns the number of marshalled
 bytes (or if
 .I buf
@@ -53,4 +53,4 @@ None.
 .SH BUGS
 None.
 .SH SEE ALSO
-.BR libsha2_unmarshal (3)
+.BR libsha2_hmac_unmarshal (3)

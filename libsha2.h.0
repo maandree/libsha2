@@ -1,4 +1,4 @@
-.TH LIBSHA2.H 0 2019-02-09 libjson
+.TH LIBSHA2.H 0 2019-02-10 libjson
 .SH NAME
 libsha2.h \- SHA 2 library header
 .SH SYNOPSIS
@@ -29,6 +29,13 @@ void libsha2_behex_upper(char *restrict \fIoutput\fP, const void *restrict \fIha
 void libsha2_unhex(void *restrict \fIoutput\fP, const char *restrict \fIhashsum\fP);
 size_t libsha2_marshal(const struct libsha2_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
 size_t libsha2_unmarshal(struct libsha2_state *restrict \fIstate\fP, const void *restrict \fIbuf\fP, size_t \fIbufsize\fP);
+int libsha2_hmac_init(struct libsha2_hmac_state *restrict \fIstate\fP, enum libsha2_algorithm \fIalgorithm\fP,
+                      const void *restrict \fIkey\fP, size_t \fIkeylen\fP);
+size_t libsha2_hmac_state_output_size(const struct libsha2_hmac_state *restrict \fIstate\fP);
+void libsha2_hmac_update(struct libsha2_hmac_state *restrict \fIstate\fP, const void *restrict \fIdata\fP, size_t \fIn\fP);
+void libsha2_hmac_digest(struct libsha2_hmac_state *restrict \fIstate\fP, const void *\fIdata\fP, size_t \fIn\fP, void *\fIoutput\fP);
+size_t libsha2_hmac_marshal(const struct libsha2_hmac_state *restrict \fIstate\fP, void *restrict \fIbuf\fP);
+size_t libsha2_hmac_unmarshal(struct libsha2_hmac_state *restrict \fIstate\fP, const void *restrict \fIbuf\fP, size_t \fIbufsize\fP);
 .fi
 .PP
 Link with
@@ -97,6 +104,21 @@ Marshal a hashing state.
 .TP
 .BR libsha2_unmarshal (3)
 Unmarshal a hashing state.
+.TP
+.BR libsha2_hmac_init (3)
+Initialise HMAC hashing state.
+.TP
+.BR libsha2_hmac_update (3)
+Feed data into the HMAC hashing state.
+.TP
+.BR libsha2_hmac_digest (3)
+Get the result of an HMAC hashing.
+.TP
+.BR libsha2_hmac_marshal (3)
+Marshal an HMAC hashing state.
+.TP
+.BR libsha2_hmac_unmarshal (3)
+Unmarshal an HMAC hashing state.
 .SH EXAMPLES
 None.
 .SH APPLICATION USAGE
@@ -114,6 +136,11 @@ None.
 .BR libsha2_behex_lower (3),
 .BR libsha2_behex_upper (3),
 .BR libsha2_digest (3),
+.BR libsha2_hmac_digest (3),
+.BR libsha2_hmac_init (3),
+.BR libsha2_hmac_marshal (3),
+.BR libsha2_hmac_unmarshal (3),
+.BR libsha2_hmac_update (3),
 .BR libsha2_init (3),
 .BR libsha2_marshal (3),
 .BR libsha2_state_output_size (3),

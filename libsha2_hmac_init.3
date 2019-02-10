@@ -1,0 +1,70 @@
+.TH LIBSHA2_HMAC_INIT 3 2019-02-10 libjson
+.SH NAME
+libsha2_hmac_init \- Initialises hashing with an HMAC-SHA 2 algorithm
+.SH SYNOPSIS
+.nf
+#include <libsha2.h>
+
+enum libsha2_algorithm {
+	LIBSHA2_224,     /* SHA-224     */
+	LIBSHA2_256,     /* SHA-256     */
+	LIBSHA2_384,     /* SHA-384     */
+	LIBSHA2_512,     /* SHA-512     */
+	LIBSHA2_512_224, /* SHA-512/224 */
+	LIBSHA2_512_256  /* SHA-512/256 */
+};
+
+int libsha2_hmac_init(struct libsha2_hmac_state *restrict \fIstate\fP, enum libsha2_algorithm \fIalgorithm\fP,
+                      const void *restrict \fIkey\fP, size_t \fIkeylen\fP);
+.fi
+.PP
+Link with
+.IR \-lsha2 .
+.SH DESCRIPTION
+The
+.BR libsha2_hmac_init ()
+function stores the selected
+.I algorithm
+in
+.I state
+and initialises
+.I state
+with the first
+.I keylen
+bits of
+.I key
+as the key.
+.SH RETURN VALUE
+The
+.BR libsha2_hmac_init ()
+function returns 0 upon successful completion,
+otherwise -1 is returned and
+.I errno
+is set appropriately.
+.SH ERRORS
+The
+.BR libsha2_hmac_init ()
+function will fail if:
+.TP
+.B EINVAL
+.I algorithm
+is not a valid
+.B enum libsha2_algorithm
+value.
+.SH EXAMPLES
+None.
+.SH APPLICATION USAGE
+None.
+.SH RATIONALE
+None.
+.SH FUTURE DIRECTIONS
+None.
+.SH NOTES
+None.
+.SH BUGS
+None.
+.SH SEE ALSO
+.BR libsha2_hmac_digest (3),
+.BR libsha2_hmac_marshal (3),
+.BR libsha2_hmac_unmarshal (3),
+.BR libsha2_hmac_update (3)

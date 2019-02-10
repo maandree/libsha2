@@ -6,7 +6,7 @@
 /**
  * Get the output size of an algorithm
  * 
- * @parma   algorithm  The hashing algorithm
+ * @param   algorithm  The hashing algorithm
  * @return             The number of bytes in the output, zero on error
  */
 size_t

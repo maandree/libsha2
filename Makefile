@@ -21,6 +21,7 @@ OBJ =\
 	hmac_digest.o\
 	hmac_init.o\
 	hmac_marshal.o\
+	hmac_state_output_size.o\
 	hmac_unmarshal.o\
 	hmac_update.o\
 	init.o\
@@ -40,8 +41,14 @@ MAN3 =\
 	libsha2_behex_lower.3\
 	libsha2_behex_upper.3\
 	libsha2_digest.3\
-	libsha2_marshal.3\
+	libsha2_hmac_digest.3\
+	libsha2_hmac_init.3\
+	libsha2_hmac_marshal.3\
+	libsha2_hmac_state_output_size.3\
+	libsha2_hmac_unmarshal.3\
+	libsha2_hmac_update.3\
 	libsha2_init.3\
+	libsha2_marshal.3\
 	libsha2_state_output_size.3\
 	libsha2_sum_fd.3\
 	libsha2_unhex.3\
