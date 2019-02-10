@@ -38,10 +38,10 @@ libsha2_hmac_unmarshal(struct libsha2_hmac_state *restrict state, const void *re
 		return 0;
 	}
 
-	state->outsize = *(size_t *)&buf[off];
+	state->outsize = *(const size_t *)&buf[off];
 	off += sizeof(size_t);
 
-	state->inited = *(unsigned char *)&buf[off];
+	state->inited = *(const unsigned char *)&buf[off];
 	off += sizeof(unsigned char);
 
 	memcpy(state->ipad, &buf[off], state->sha2_state.chunk_size);
