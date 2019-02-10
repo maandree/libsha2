@@ -23,12 +23,52 @@
 		exit(1);\
 	} while (0)
 
+#define test_repeated(CHR, N, ALGO, EXPECTED)\
+	do {\
+		memset(buf, CHR, N);\
+		test(!libsha2_init(&s, ALGO));\
+		libsha2_digest(&s, buf, (N) * 8, buf);\
+		libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));\
+		test_str(str, EXPECTED);\
+	} while (0)
+
+#define test_repeated_huge(CHR, N, ALGO, EXPECTED)\
+	do {\
+		size_t n = N;\
+		if (skip_huge)\
+			break;\
+		memset(buf, CHR, sizeof(buf));\
+		test(!libsha2_init(&s, ALGO));\
+		fprintf(stderr, "processing huge message: 0 %%\n");\
+		for (; n > sizeof(buf); n -= sizeof(buf)) {\
+			libsha2_update(&s, buf, sizeof(buf) * 8);\
+			fprintf(stderr, "\033[A\033[Kprocessing huge message: %zu %%\n", ((N) - n) * 100 / (N));\
+		}\
+		libsha2_update(&s, buf, n * 8);\
+		fprintf(stderr, "\033[A\033[K");\
+		fflush(stderr);\
+		libsha2_digest(&s, NULL, 0, buf);\
+		libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));\
+		test_str(str, EXPECTED);\
+	} while (0)
+
+#define test_custom(S, ALGO, EXPECTED)\
+	do {\
+		test(!libsha2_init(&s, ALGO));\
+		libsha2_digest(&s, S, (sizeof(S) - 1) * 8, buf);\
+		libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));\
+		test_str(str, EXPECTED);\
+	} while (0)
+
 
 int
-main(void)
+main(int argc, char *argv[])
 {
-	char buf[1024], str[1024];
+	char buf[8096], str[1024];
 	struct libsha2_state s;
+	int skip_huge;
+
+	skip_huge = (argc == 2 && !strcmp(argv[1], "skip-huge"));
 
 	libsha2_behex_lower(buf, "", 0);
 	test_str(buf, "");
@@ -114,6 +154,75 @@ main(void)
 	libsha2_digest(&s, "", 0, buf);
 	libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
 	test_str(str, "c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a");
+
+	test_repeated(0xFF, 1, LIBSHA2_224, "e33f9d75e6ae1369dbabf81b96b4591ae46bba30b591a6b6c62542b5");
+	test_custom("\xE5\xE0\x99\x24", LIBSHA2_224, "fd19e74690d291467ce59f077df311638f1c3a46e510d0e49a67062d");
+	test_repeated(0x00, 56, LIBSHA2_224, "5c3e25b69d0ea26f260cfae87e23759e1eca9d1ecc9fbf3c62266804");
+	test_repeated(0x51, 1000, LIBSHA2_224, "3706197f66890a41779dc8791670522e136fafa24874685715bd0a8a");
+	test_repeated(0x41, 1000, LIBSHA2_224, "a8d0c66b5c6fdfd836eb3c6d04d32dfe66c3b1f168b488bf4c9c66ce");
+	test_repeated(0x99, 1005, LIBSHA2_224, "cb00ecd03788bf6c0908401e0eb053ac61f35e7e20a2cfd7bd96d640");
+	test_repeated_huge(0x00, 1000000UL, LIBSHA2_224, "3a5d74b68f14f3a4b2be9289b8d370672d0b3d2f53bc303c59032df3");
+	test_repeated_huge(0x41, 0x20000000UL, LIBSHA2_224, "c4250083cf8230bf21065b3014baaaf9f76fecefc21f91cf237dedc9");
+	test_repeated_huge(0x00, 0x41000000UL, LIBSHA2_224, "014674abc5cb980199935695af22fab683748f4261d4c6492b77c543");
+	test_repeated_huge(0x84, 0x6000003FUL, LIBSHA2_224, "a654b50b767a8323c5b519f467d8669837142881dc7ad368a7d5ef8f");
+	test_custom("abc", LIBSHA2_224, "23097d223405d8228642a477bda255b32aadbce4bda0b3f7e36c9da7");
+	test_custom("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", LIBSHA2_224,
+	            "75388b16512776cc5dba5da1fd890150b0c6455cb4f58b1952522525");
+
+	test_repeated(0xBD, 1, LIBSHA2_256, "68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b");
+	test_custom("\xC9\x8C\x8E\x55", LIBSHA2_256, "7abc22c0ae5af26ce93dbb94433a0e0b2e119d014f8e7f65bd56c61ccccd9504");
+	test_repeated(0x00, 55, LIBSHA2_256, "02779466cdec163811d078815c633f21901413081449002f24aa3e80f0b88ef7");
+	test_repeated(0x00, 56, LIBSHA2_256, "d4817aa5497628e7c77e6b606107042bbba3130888c5f47a375e6179be789fbb");
+	test_repeated(0x00, 57, LIBSHA2_256, "65a16cb7861335d5ace3c60718b5052e44660726da4cd13bb745381b235a1785");
+	test_repeated(0x00, 64, LIBSHA2_256, "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b");
+	test_repeated(0x00, 1000, LIBSHA2_256, "541b3e9daa09b20bf85fa273e5cbd3e80185aa4ec298e765db87742b70138a53");
+	test_repeated(0x41, 1000, LIBSHA2_256, "c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4");
+	test_repeated(0x55, 1005, LIBSHA2_256, "f4d62ddec0f3dd90ea1380fa16a5ff8dc4c54b21740650f24afc4120903552b0");
+	test_repeated_huge(0x00, 1000000UL, LIBSHA2_256, "d29751f2649b32ff572b5e0a9f541ea660a50f94ff0beedfb0b692b924cc8025");
+	test_repeated_huge(0x5A, 0x20000000UL, LIBSHA2_256, "15a1868c12cc53951e182344277447cd0979536badcc512ad24c67e9b2d4f3dd");
+	test_repeated_huge(0x00, 0x41000000UL, LIBSHA2_256, "461c19a93bd4344f9215f5ec64357090342bc66b15a148317d276e31cbc20b53");
+	test_repeated_huge(0x42, 0x6000003EUL, LIBSHA2_256, "c23ce8a7895f4b21ec0daf37920ac0a262a220045a03eb2dfed48ef9b05aabea");
+	test_custom("abc", LIBSHA2_256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+	test_custom("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", LIBSHA2_256,
+	            "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
+
+	test_repeated(0x00, 111, LIBSHA2_384,"435770712c611be7293a66dd0dc8d1450dc7ff7337bfe115bf058ef2eb9bed09cee85c26963a5bcc0905dc2df7cc6a76");
+	test_repeated(0x00, 112, LIBSHA2_384, "3e0cbf3aee0e3aa70415beae1bd12dd7db821efa446440f12132edffce76f635e53526a111491e75ee8e27b9700eec20");
+	test_repeated(0x00, 113, LIBSHA2_384, "6be9af2cf3cd5dd12c8d9399ec2b34e66034fbd699d4e0221d39074172a380656089caafe8f39963f94cc7c0a07e3d21");
+	test_repeated(0x00, 122, LIBSHA2_384, "12a72ae4972776b0db7d73d160a15ef0d19645ec96c7f816411ab780c794aa496a22909d941fe671ed3f3caee900bdd5");
+	test_repeated(0x00, 1000, LIBSHA2_384, "aae017d4ae5b6346dd60a19d52130fb55194b6327dd40b89c11efc8222292de81e1a23c9b59f9f58b7f6ad463fa108ca");
+	test_repeated(0x41, 1000, LIBSHA2_384, "7df01148677b7f18617eee3a23104f0eed6bb8c90a6046f715c9445ff43c30d69e9e7082de39c3452fd1d3afd9ba0689");
+	test_repeated(0x55, 1005, LIBSHA2_384, "1bb8e256da4a0d1e87453528254f223b4cb7e49c4420dbfa766bba4adba44eeca392ff6a9f565bc347158cc970ce44ec");
+	test_repeated_huge(0x00, 1000000UL, LIBSHA2_384, "8a1979f9049b3fff15ea3a43a4cf84c634fd14acad1c333fecb72c588b68868b66a994386dc0cd1687b9ee2e34983b81");
+	test_repeated_huge(0x5A, 0x20000000UL, LIBSHA2_384, "18aded227cc6b562cc7fb259e8f404549e52914531aa1c5d85167897c779cc4b25d0425fd1590e40bd763ec3f4311c1a");
+	test_repeated_huge(0x00, 0x41000000UL, LIBSHA2_384, "83ab05ca483abe3faa597ad524d31291ae827c5be2b3efcb6391bfed31ccd937b6135e0378c6c7f598857a7c516f207a");
+	test_repeated_huge(0x42, 0x6000003EUL, LIBSHA2_384, "cf852304f8d80209351b37ce69ca7dcf34972b4edb7817028ec55ab67ad3bc96eecb8241734258a85d2afce65d4571e2");
+	test_custom("abc", LIBSHA2_384, "cb00753f45a35e8bb5a03d699ac65007272c32ab0eded1631a8b605a43ff5bed8086072ba1e7cc2358baeca134c825a7");
+	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_384,
+	            "09330c33f71147e83d192fc782cd1b4753111b173b3b05d22fa08086e3b0f712fcc7c71a557e2db966c3e9fa91746039");
+
+	test_repeated(0x00, 111, LIBSHA2_512, "77ddd3a542e530fd047b8977c657ba6ce72f1492e360b2b2212cd264e75ec03882e4ff0525517ab4207d14c70c2259ba88d4d335ee0e7e20543d22102ab1788c");
+	test_repeated(0x00, 112, LIBSHA2_512, "2be2e788c8a8adeaa9c89a7f78904cacea6e39297d75e0573a73c756234534d6627ab4156b48a6657b29ab8beb73334040ad39ead81446bb09c70704ec707952");
+	test_repeated(0x00, 113, LIBSHA2_512, "0e67910bcf0f9ccde5464c63b9c850a12a759227d16b040d98986d54253f9f34322318e56b8feb86c5fb2270ed87f31252f7f68493ee759743909bd75e4bb544");
+	test_repeated(0x00, 122, LIBSHA2_512, "4f3f095d015be4a7a7cc0b8c04da4aa09e74351e3a97651f744c23716ebd9b3e822e5077a01baa5cc0ed45b9249e88ab343d4333539df21ed229da6f4a514e0f");
+	test_repeated(0x00, 1000, LIBSHA2_512, "ca3dff61bb23477aa6087b27508264a6f9126ee3a004f53cb8db942ed345f2f2d229b4b59c859220a1cf1913f34248e3803bab650e849a3d9a709edc09ae4a76");
+	test_repeated(0x41, 1000, LIBSHA2_512, "329c52ac62d1fe731151f2b895a00475445ef74f50b979c6f7bb7cae349328c1d4cb4f7261a0ab43f936a24b000651d4a824fcdd577f211aef8f806b16afe8af");
+	test_repeated(0x55, 1005, LIBSHA2_512, "59f5e54fe299c6a8764c6b199e44924a37f59e2b56c3ebad939b7289210dc8e4c21b9720165b0f4d4374c90f1bf4fb4a5ace17a1161798015052893a48c3d161");
+	test_repeated_huge(0x00, 1000000UL, LIBSHA2_512, "ce044bc9fd43269d5bbc946cbebc3bb711341115cc4abdf2edbc3ff2c57ad4b15deb699bda257fea5aef9c6e55fcf4cf9dc25a8c3ce25f2efe90908379bff7ed");
+	test_repeated_huge(0x5A, 0x20000000UL, LIBSHA2_512, "da172279f3ebbda95f6b6e1e5f0ebec682c25d3d93561a1624c2fa9009d64c7e9923f3b46bcaf11d39a531f43297992ba4155c7e827bd0f1e194ae7ed6de4cac");
+	test_repeated_huge(0x00, 0x41000000UL, LIBSHA2_512, "14b1be901cb43549b4d831e61e5f9df1c791c85b50e85f9d6bc64135804ad43ce8402750edbe4e5c0fc170b99cf78b9f4ecb9c7e02a157911d1bd1832d76784f");
+	test_repeated_huge(0x42, 0x6000003EUL, LIBSHA2_512, "fd05e13eb771f05190bd97d62647157ea8f1f6949a52bb6daaedbad5f578ec59b1b8d6c4a7ecb2feca6892b4dc138771670a0f3bd577eea326aed40ab7dd58b1");
+	test_custom("abc", LIBSHA2_512, "ddaf35a193617abacc417349ae20413112e6fa4e89a97ea20a9eeee64b55d39a2192992a274fc1a836ba3c23a3feebbd454d4423643ce80e2a9ac94fa54ca49f");
+	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512,
+	            "8e959b75dae313da8cf4f72814fc143f8f7779c6eb9f7fa17299aeadb6889018501d289e4900f7e4331b99dec4b5433ac7d329eeb6dd26545e96e55b874be909");
+
+	test_custom("abc", LIBSHA2_512_224, "4634270f707b6a54daae7530460842e20e37ed265ceee9a43e8924aa");
+	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512_224,
+	            "23fec5bb94d60b23308192640b0c453335d664734fe40e7268674af9");
+
+	test_custom("abc", LIBSHA2_512_256, "53048e2681941ef99b2e29b76b4c7dabe4c2d0c634fc6d46e0e2f13107e7af23");
+	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512_256,
+	            "3928e184fb8690f840da3988121d31be65cb9d3ef83ee6146feac861e19b563a");
 
 	test(!errno);
 
