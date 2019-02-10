@@ -24,6 +24,7 @@ libsha2_digest(struct libsha2_state *restrict state, const char *message, size_t
 	off = (state->message_size / 8) % state->chunk_size;
 	if (msglen) {
 		state->chunk[off] = (unsigned char)*message;
+		state->chunk[off] <<= 8 - msglen;
 		state->chunk[off] |= (unsigned char)(1 << (7 - msglen));
 		state->chunk[off] &= (unsigned char)~((1 << (7 - msglen)) - 1);
 		state->message_size += msglen;

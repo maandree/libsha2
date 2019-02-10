@@ -62,6 +62,15 @@
 		test_str(str, EXPECTED);\
 	} while (0)
 
+#define test_bits(S, N, ALGO, EXPECTED)\
+	do {\
+		libsha2_unhex(buf, S);\
+		test(!libsha2_init(&s, ALGO));\
+		libsha2_digest(&s, buf, N, buf);\
+		libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));\
+		test_str(str, EXPECTED);\
+	} while (0)
+
 
 int
 main(int argc, char *argv[])
@@ -305,6 +314,14 @@ main(int argc, char *argv[])
 	close(fds[0]);
 	libsha2_behex_lower(str, buf, libsha2_algorithm_output_size(LIBSHA2_256));
 	test_str(str, "c2e686823489ced2017f6059b8b239318b6364f6dcd835d0a519105a1eadd6e4");
+
+	test_bits("01", 1, LIBSHA2_224, "0d05096bca2a4a77a2b47a05a59618d01174b37892376135c1b6e957");
+	test_bits("02", 2, LIBSHA2_224, "ef9c947a47bb9311a0f2b8939cfc12090554868b3b64d8f71e6442f3");
+	test_bits("04", 3, LIBSHA2_224, "4f2ec61c914dce56c3fe5067aa184125ab126c39edb8bf64f58bdccd");
+	test_bits("05", 4, LIBSHA2_224, "b04c423c9091ff5bb32ea4b0063e98814633350c1bc2bd974f776fd2");
+	test_bits("0d", 5, LIBSHA2_224, "e3b048552c3c387bcab37f6eb06bb79b96a4aee5ff27f51531a9551c");
+	test_bits("2b", 6, LIBSHA2_224, "44b64a6dbd91d49df5af0c9f8e001b1378e1dc29c4b891350e5d7bd9");
+	test_bits("0c", 7, LIBSHA2_224, "20f25c1fe299cf337ff7ff9cc4b5b5afac076759720174a29ba79db6");
 
 	test(!errno);
 

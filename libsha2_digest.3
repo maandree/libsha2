@@ -31,6 +31,14 @@ least the return value of the
 .BR libsha2_state_output_size (3)
 function.
 .PP
+If 
+.I msglen
+is not a multiple of 8, the lowest
+.I msglen%8
+bits from the last by in
+.I message
+is used as the complete byte.
+.PP
 The
 .BR libsha2_behex_lower (3)
 and
