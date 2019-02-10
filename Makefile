@@ -109,7 +109,7 @@ uninstall:
 	-rm -rf -- "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
 
 clean:
-	-rm -f -- *.o *.lo *.su *.a *.so
+	-rm -f -- *.o *.lo *.su *.a *.so test
 
 .SUFFIXES:
 .SUFFIXES: .lo .o .c
