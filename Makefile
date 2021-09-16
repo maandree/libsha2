@@ -58,22 +58,24 @@ MAN3 =\
 	libsha2_unmarshal.3\
 	libsha2_update.3
 
+LOBJ = $(OBJ:.o=.lo)
+
 
 all: libsha2.a libsha2.$(LIBEXT) test
-$(OBJ): $(@:.o=.c) $(HDR)
-$(OBJ:.o=.lo): $(@:.lo=.c) $(HDR)
+$(OBJ): $(HDR)
+$(LOBJ): $(HDR)
 
 .c.o:
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 .c.lo:
-	$(CC) -fPIC -c -o $@ $< $(CFLAGS)
+	$(CC) -fPIC -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 test: test.o libsha2.a
 	$(CC) -o $@ test.o libsha2.a $(LDFLAGS)
 
-libsha2.$(LIBEXT): $(OBJ:.o=.lo)
-	$(CC) $(LIBFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+libsha2.$(LIBEXT): $(LOBJ)
+	$(CC) $(LIBFLAGS) -o $@ $(LOBJ) $(LDFLAGS)
 
 libsha2.a: $(OBJ)
 	-rm -f -- $@
@@ -86,7 +88,6 @@ check: test
 install:
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/include"
-	mkdir -p -- "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man0"
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
 	cp -- libsha2.a "$(DESTDIR)$(PREFIX)/lib"
@@ -96,7 +97,6 @@ install:
 	cp -- libsha2.h "$(DESTDIR)$(PREFIX)/include"
 	cp -- $(MAN0) "$(DESTDIR)$(MANPREFIX)/man0"
 	cp -- $(MAN3) "$(DESTDIR)$(MANPREFIX)/man3"
-	cp -- LICENSE "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
 
 uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libsha2.a"
@@ -106,10 +106,9 @@ uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libsha2.h"
 	-cd -- "$(DESTDIR)$(MANPREFIX)/man0" && rm -f -- $(MAN0)
 	-cd -- "$(DESTDIR)$(MANPREFIX)/man3" && rm -f -- $(MAN3)
-	-rm -rf -- "$(DESTDIR)$(PREFIX)/share/licenses/libsha2"
 
 clean:
-	-rm -f -- *.o *.lo *.su *.a *.so test
+	-rm -f -- *.o *.lo *.su *.a *.$(LIBEXT) test
 
 .SUFFIXES:
 .SUFFIXES: .lo .o .c
