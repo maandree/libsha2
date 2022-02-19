@@ -10,4 +10,5 @@ RATIONALE
 	This should be obvious.
 
 SEE ALSO
-	libkeccak(7), libsha1(7), sha224sum(1), sha256sum(1), sha384sum(1), sha512sum(1)
+	libkeccak(7), libblake(7), libsha1(7), sha224sum(1),
+	sha256sum(1), sha384sum(1), sha512sum(1)
