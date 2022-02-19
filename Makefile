@@ -1,16 +1,19 @@
-.NONPOSIX:
+.POSIX:
 
 CONFIGFILE = config.mk
+include $(CONFIGFILE)
 
-OSCONFIGFILE = linux.mk
-# Change to macos.mk for Mac OS
+OS = linux
+# Linux:   linux
+# Mac OS:  macos
+# Windows: windows
+include mk/$(OS).mk
+
 
 LIB_MAJOR = 1
 LIB_MINOR = 0
 LIB_VERSION = $(LIB_MAJOR).$(LIB_MINOR)
 
-include $(CONFIGFILE)
-include $(OSCONFIGFILE)
 
 HDR =\
 	libsha2.h\
@@ -34,7 +37,7 @@ OBJ =\
 	sum_fd.o\
 	unhex.o\
 	unmarshal.o\
-	update.o\
+	update.o
 
 MAN0 =\
 	libsha2.h.0
@@ -92,6 +95,7 @@ install:
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
 	cp -- libsha2.a "$(DESTDIR)$(PREFIX)/lib"
 	cp -- libsha2.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
+	$(FIX_INSTALL_NAME) -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
 	ln -sf -- "libsha2.$(LIBMINOREXT).$(LIB_MINOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMAJOREXT)"
 	ln -sf -- "libsha2.$(LIBMAJOREXT)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
 	cp -- libsha2.h "$(DESTDIR)$(PREFIX)/include"
