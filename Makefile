@@ -95,7 +95,7 @@ install:
 	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
 	cp -- libsha2.a "$(DESTDIR)$(PREFIX)/lib"
 	cp -- libsha2.$(LIBEXT) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
-	$(FIX_INSTALL_NAME) -- "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
+	$(FIX_INSTALL_NAME) "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMINOREXT)"
 	ln -sf -- "libsha2.$(LIBMINOREXT).$(LIB_MINOR)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBMAJOREXT)"
 	ln -sf -- "libsha2.$(LIBMAJOREXT)" "$(DESTDIR)$(PREFIX)/lib/libsha2.$(LIBEXT)"
 	cp -- libsha2.h "$(DESTDIR)$(PREFIX)/include"
