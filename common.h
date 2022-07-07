@@ -16,6 +16,23 @@
 
 
 /**
+ * Truncate an unsigned integer to an unsigned 32-bit integer
+ * 
+ * @param   X:uint_least32_t  The value to truncate
+ * @return  :uint_least32_t   The 32 lowest bits in `X`
+ */
+#define TRUNC32(X) ((X) & (uint_least32_t)0xFFFFFFFFUL)
+
+/**
+ * Truncate an unsigned integer to an unsigned 64-bit integer
+ * 
+ * @param   X:uint_least64_t  The value to truncate
+ * @return  :uint_least64_t   The 64 lowest bits in `X`
+ */
+#define TRUNC64(X) ((X) & (uint_least64_t)0xFFFFFFFFFFFFFFFFULL)
+
+
+/**
  * Process a chunk using SHA-2
  * 
  * @param  state  The hashing state

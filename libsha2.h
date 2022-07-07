@@ -66,12 +66,12 @@ struct libsha2_state {
 		/**
 		 * For 32-bit algorithms
 		 */
-		uint32_t b32[64];
+		uint_least32_t b32[64];
     
 		/**
 		 * For 64-bit algorithms
 		 */
-		uint64_t b64[80];
+		uint_least64_t b64[80];
 	} k;
 
 	/**
@@ -83,12 +83,12 @@ struct libsha2_state {
 		/**
 		 * For 32-bit algorithms
 		 */
-		uint32_t b32[64];
+		uint_least32_t b32[64];
 
 		/**
 		 * For 64-bit algorithms
 		 */
-		uint64_t b64[80];
+		uint_least64_t b64[80];
 	} w;
 
 	/**
@@ -98,12 +98,12 @@ struct libsha2_state {
 		/**
 		 * For 32-bit algorithms
 		 */
-		uint32_t b32[8];
+		uint_least32_t b32[8];
 
 		/**
 		 * For 64-bit algorithms
 		 */
-		uint64_t b64[8];
+		uint_least64_t b64[8];
 	} h;
 
 	/**
@@ -115,12 +115,12 @@ struct libsha2_state {
 		/**
 		 * For 32-bit algorithms
 		 */
-		uint32_t b32[8];
+		uint_least32_t b32[8];
 
 		/**
 		 * For 64-bit algorithms
 		 */
-		uint64_t b64[8];
+		uint_least64_t b64[8];
 	} work_h;
 
 	/**
@@ -153,6 +153,7 @@ struct libsha2_state {
  * `explicit_bzero` (or `memset`) when you are done.
  */
 struct libsha2_hmac_state {
+
 	/**
 	 * State of the underlaying hash function
 	 */

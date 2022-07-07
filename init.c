@@ -5,7 +5,7 @@
 /**
  * Round constants, SHA-256, should keep the 32 most significant bits of 64 first constants
  */
-static const uint64_t ROUND_CONSTANTS[] = {
+static const uint_least64_t ROUND_CONSTANTS[] = {
 	0x428A2F98D728AE22ULL, 0x7137449123EF65CDULL, 0xB5C0FBCFEC4D3B2FULL, 0xE9B5DBA58189DBBCULL,
 	0x3956C25BF348B538ULL, 0x59F111F1B605D019ULL, 0x923F82A4AF194F9BULL, 0xAB1C5ED5DA6D8118ULL,
 	0xD807AA98A3030242ULL, 0x12835B0145706FBEULL, 0x243185BE4EE4B28CULL, 0x550C7DC3D5FFB4E2ULL,
@@ -32,7 +32,7 @@ static const uint64_t ROUND_CONSTANTS[] = {
 /**
  * Initial state for SHA224
  */
-static const uint32_t H_224[] = {
+static const uint_least32_t H_224[] = {
 	0xC1059ED8UL, 0x367CD507UL, 0x3070DD17UL, 0xF70E5939UL,
 	0xFFC00B31UL, 0x68581511UL, 0x64F98FA7UL, 0xBEFA4FA4UL
 };
@@ -40,7 +40,7 @@ static const uint32_t H_224[] = {
 /**
  * Initial state for SHA256
  */
-static const uint32_t H_256[] = {
+static const uint_least32_t H_256[] = {
 	0x6A09E667UL, 0xBB67AE85UL, 0x3C6EF372UL, 0xA54FF53AUL,
 	0x510E527FUL, 0x9B05688CUL, 0x1F83D9ABUL, 0x5BE0CD19UL
 };
@@ -48,7 +48,7 @@ static const uint32_t H_256[] = {
 /**
  * Initial state for SHA384
  */
-static const uint64_t H_384[] = {
+static const uint_least64_t H_384[] = {
 	0xCBBB9D5DC1059ED8ULL, 0x629A292A367CD507ULL, 0x9159015A3070DD17ULL, 0x152FECD8F70E5939ULL,
 	0x67332667FFC00B31ULL, 0x8EB44A8768581511ULL, 0xDB0C2E0D64F98FA7ULL, 0x47B5481DBEFA4FA4ULL
 };
@@ -56,7 +56,7 @@ static const uint64_t H_384[] = {
 /**
  * Initial state for SHA512
  */
-static const uint64_t H_512[] = {
+static const uint_least64_t H_512[] = {
 	0x6A09E667F3BCC908ULL, 0xBB67AE8584CAA73BULL, 0x3C6EF372FE94F82BULL, 0xA54FF53A5F1D36F1ULL,
 	0x510E527FADE682D1ULL, 0x9B05688C2B3E6C1FULL, 0x1F83D9ABFB41BD6BULL, 0x5BE0CD19137E2179ULL
 };
@@ -64,7 +64,7 @@ static const uint64_t H_512[] = {
 /**
  * Initial state for SHA512/224
  */
-static const uint64_t H_512_224[] = {
+static const uint_least64_t H_512_224[] = {
 	0x8C3D37C819544DA2ULL, 0x73E1996689DCD4D6ULL, 0x1DFAB7AE32FF9C82ULL, 0x679DD514582F9FCFULL,
 	0x0F6D2B697BD44DA8ULL, 0x77E36F7304C48942ULL, 0x3F9D85A86A1D36C8ULL, 0x1112E6AD91D692A1ULL
 };
@@ -72,7 +72,7 @@ static const uint64_t H_512_224[] = {
 /**
  * Initial state for SHA512/256
  */
-static const uint64_t H_512_256[] = {
+static const uint_least64_t H_512_256[] = {
 	0x22312194FC2BF72CULL, 0x9F555FA3C84C64C2ULL, 0x2393B86B6F53B151ULL, 0x963877195940EABDULL,
 	0x96283EE2A88EFFE3ULL, 0xBE5E1E2553863992ULL, 0x2B0199FC2C85B8AAULL, 0x0EB72DDC81C52CA2ULL
 };
@@ -103,7 +103,7 @@ libsha2_init(struct libsha2_state *restrict state, enum libsha2_algorithm algori
 	/* Set round constants, and chunk size. */
 	if (algorithm <= LIBSHA2_256) {
 		for (i = 0; i < 64; i++)
-			state->k.b32[i] = (uint32_t)(ROUND_CONSTANTS[i] >> 32);
+			state->k.b32[i] = (uint_least32_t)(ROUND_CONSTANTS[i] >> 32);
 		state->chunk_size = 64;
 	} else {
 		memcpy(state->k.b64, ROUND_CONSTANTS, sizeof(ROUND_CONSTANTS));
