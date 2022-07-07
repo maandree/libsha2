@@ -7,13 +7,15 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const void *restrict buf
 {
 	const char *restrict buf = buf_;
 	size_t off = 0;
+	int version;
 
 	if (bufsize < sizeof(int) + sizeof(enum libsha2_algorithm) + sizeof(size_t)) {
 		errno = EINVAL;
 		return 0;
 	}
 
-	if (*(const int *)buf) { /* version */
+	version = *(const int *)buf;
+	if (version < 0 || version > 1) { /* version */
 		errno = EINVAL;
 		return 0;
 	}
@@ -33,8 +35,9 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const void *restrict buf
 		}
 		memcpy(state->k.b32, &buf[off], sizeof(state->k.b32));
 		off += sizeof(state->k.b32);
-		memcpy(state->w.b32, &buf[off], sizeof(state->w.b32));
-		off += sizeof(state->w.b32);
+		memset(state->w.b32, 0, sizeof(state->w.b32));
+		if (version == 0)
+			off += sizeof(state->w.b32);
 		memcpy(state->h.b32, &buf[off], sizeof(state->h.b32));
 		off += sizeof(state->h.b32);
 		break;
@@ -49,8 +52,9 @@ libsha2_unmarshal(struct libsha2_state *restrict state, const void *restrict buf
 		}
 		memcpy(state->k.b64, &buf[off], sizeof(state->k.b64));
 		off += sizeof(state->k.b64);
-		memcpy(state->w.b64, &buf[off], sizeof(state->w.b64));
-		off += sizeof(state->w.b64);
+		memset(state->w.b64, 0, sizeof(state->w.b64));
+		if (version == 0)
+			off += sizeof(state->w.b64);
 		memcpy(state->h.b64, &buf[off], sizeof(state->h.b64));
 		off += sizeof(state->h.b64);
 		break;

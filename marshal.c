@@ -9,7 +9,7 @@ libsha2_marshal(const struct libsha2_state *restrict state, void *restrict buf_)
 	size_t off = 0;
 
 	if (buf)
-		*(int *)buf = 0; /* version */
+		*(int *)buf = 1; /* version */
 	off += sizeof(int);
 	if (buf)
 		*(enum libsha2_algorithm *)&buf[off] = state->algorithm;
@@ -23,18 +23,12 @@ libsha2_marshal(const struct libsha2_state *restrict state, void *restrict buf_)
 			memcpy(&buf[off], state->k.b32, sizeof(state->k.b32));
 		off += sizeof(state->k.b32);
 		if (buf)
-			memcpy(&buf[off], state->w.b32, sizeof(state->w.b32));
-		off += sizeof(state->w.b32);
-		if (buf)
 			memcpy(&buf[off], state->h.b32, sizeof(state->h.b32));
 		off += sizeof(state->h.b32);
 	} else {
 		if (buf)
 			memcpy(&buf[off], state->k.b64, sizeof(state->k.b64));
 		off += sizeof(state->k.b64);
-		if (buf)
-			memcpy(&buf[off], state->w.b64, sizeof(state->w.b64));
-		off += sizeof(state->w.b64);
 		if (buf)
 			memcpy(&buf[off], state->h.b64, sizeof(state->h.b64));
 		off += sizeof(state->h.b64);
