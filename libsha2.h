@@ -10,6 +10,7 @@
  * Algorithms supported by libsha2
  */
 enum libsha2_algorithm {
+
 	/**
 	 * SHA-224, outputs 28 bytes
 	 */
@@ -51,6 +52,7 @@ enum libsha2_algorithm {
  * `explicit_bzero` (or `memset`) when you are done.
  */
 struct libsha2_state {
+
 	/**
 	 * The size of the message, as far as processed, in bits;
 	 */
