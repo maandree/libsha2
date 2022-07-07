@@ -78,13 +78,6 @@ static const uint64_t H_512_256[] = {
 };
 
 
-/**
- * Initialise a state
- * 
- * @param   state      The state that should be initialised
- * @param   algorithm  The hashing algorithm
- * @return             Zero on success, -1 on error
- */
 int
 libsha2_init(struct libsha2_state *restrict state, enum libsha2_algorithm algorithm)
 {

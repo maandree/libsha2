@@ -2,14 +2,6 @@
 #include "common.h"
 
 
-/**
- * Unmarshal a state from a buffer
- * 
- * @param   state    Output parameter for the unmarshalled state
- * @param   buf      The buffer from which the state shall be unmarshalled
- * @param   bufsize  The maximum number of bytes that can be unmarshalled
- * @return           The number of read bytes, 0 on failure
- */
 size_t
 libsha2_unmarshal(struct libsha2_state *restrict state, const void *restrict buf_, size_t bufsize)
 {

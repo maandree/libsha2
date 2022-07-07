@@ -2,14 +2,6 @@
 #include "common.h"
 
 
-/**
- * Feed data into the HMAC algorithm
- * 
- * @param  state  The state of the algorithm
- * @param  data   Data to feed into the algorithm
- * @param  n      The number of bytes to feed into the
- *                algorithm, this must be a multiple of 8
- */
 void
 libsha2_hmac_update(struct libsha2_hmac_state *restrict state, const void *restrict data, size_t n)
 {

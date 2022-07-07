@@ -2,15 +2,6 @@
 #include "common.h"
 
 
-/**
- * Calculate the checksum for a file,
- * the content of the file is assumed non-sensitive
- * 
- * @param   fd         The file descriptor of the file
- * @param   algorithm  The hashing algorithm
- * @param   hashsum    Output buffer for the hash
- * @return             Zero on success, -1 on error
- */
 int
 libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, void *restrict hashsum)
 {

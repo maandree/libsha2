@@ -2,14 +2,6 @@
 #include "common.h"
 
 
-/**
- * Absorb the last part of the message and output a hash
- * 
- * @param  state    The hashing state
- * @param  message  The message, in bits
- * @param  msglen   The length of the message, zero if there is nothing more to absorb
- * @param  output   The output buffer for the hash
- */
 void
 libsha2_digest(struct libsha2_state *restrict state, const void *message_, size_t msglen, void *output_)
 {

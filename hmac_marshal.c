@@ -2,13 +2,6 @@
 #include "common.h"
 
 
-/**
- * Marshal an HMAC state into a buffer
- * 
- * @param   state  The state to marshal
- * @param   buf    Output buffer, `NULL` to only return the required size
- * @return         The number of bytes marshalled to `buf`
- */
 size_t
 libsha2_hmac_marshal(const struct libsha2_hmac_state *restrict state, void *restrict buf_)
 {

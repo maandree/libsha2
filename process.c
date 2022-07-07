@@ -55,12 +55,6 @@
 		h[i] += work_h[i]
 
 
-/**
- * Process a chunk using SHA-2
- * 
- * @param  state  The hashing state
- * @param  chunk  The data to process
- */
 void
 libsha2_process(struct libsha2_state *restrict state, const unsigned char *restrict chunk)
 {

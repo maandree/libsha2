@@ -2,15 +2,6 @@
 #include "common.h"
 
 
-/**
- * Initialise an HMAC state
- * 
- * @param   state        The state that should be initialised
- * @param   algorithm    The hashing algorithm
- * @param   key          The key
- * @param   key_length   The length of key, in bits
- * @return               Zero on success, -1 on error
- */
 int
 libsha2_hmac_init(struct libsha2_hmac_state *restrict state, enum libsha2_algorithm algorithm,
                   const void *restrict key_, size_t keylen)
