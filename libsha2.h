@@ -2,6 +2,7 @@
 #ifndef LIBSHA2_H
 #define LIBSHA2_H  1
 
+#include <errno.h>
 #include <stdint.h>
 #include <stddef.h>
 
@@ -195,26 +196,44 @@ __attribute__((__leaf__, __nothrow__, __nonnull__))
 int libsha2_init(struct libsha2_state *restrict, enum libsha2_algorithm);
 
 /**
- * Get the output size of the algorithm specified for a state
- * 
- * @param   state  The state
- * @return         The number of bytes in the output, zero on error
- */
-#if defined(__GNUC__)
-__attribute__((__nothrow__, __nonnull__, __pure__))
-#endif
-size_t libsha2_state_output_size(const struct libsha2_state *restrict);
-
-/**
  * Get the output size of an algorithm
  * 
  * @param   algorithm  The hashing algorithm
  * @return             The number of bytes in the output, zero on error
  */
 #if defined(__GNUC__)
-__attribute__((__leaf__, __nothrow__, __const__))
+__attribute__((__warn_unused_result__, __nothrow__))
 #endif
-size_t libsha2_algorithm_output_size(enum libsha2_algorithm);
+inline size_t
+libsha2_algorithm_output_size(enum libsha2_algorithm algorithm__)
+{
+	switch (algorithm__) {
+	case LIBSHA2_224:     return 28;
+	case LIBSHA2_256:     return 32;
+	case LIBSHA2_384:     return 48;
+	case LIBSHA2_512:     return 64;
+	case LIBSHA2_512_224: return 28;
+	case LIBSHA2_512_256: return 32;
+	default:
+		errno = EINVAL;
+		return 0;
+	}
+}
+
+/**
+ * Get the output size of the algorithm specified for a state
+ * 
+ * @param   state  The state
+ * @return         The number of bytes in the output, zero on error
+ */
+#if defined(__GNUC__)
+__attribute__((__warn_unused_result__, __nothrow__, __nonnull__))
+#endif
+inline size_t
+libsha2_state_output_size(const struct libsha2_state *restrict state__)
+{
+	return libsha2_algorithm_output_size(state__->algorithm);
+}
 
 /**
  * Absorb more of the message
@@ -338,9 +357,13 @@ int libsha2_hmac_init(struct libsha2_hmac_state *restrict, enum libsha2_algorith
  * @return         The number of bytes in the output, zero on error
  */
 #if defined(__GNUC__)
-__attribute__((__nothrow__, __nonnull__, __pure__))
+__attribute__((__warn_unused_result__, __nothrow__, __nonnull__))
 #endif
-size_t libsha2_hmac_state_output_size(const struct libsha2_hmac_state *restrict);
+inline size_t
+libsha2_hmac_state_output_size(const struct libsha2_hmac_state *restrict state__)
+{
+	return libsha2_algorithm_output_size(state__->sha2_state.algorithm);
+}
 
 /**
  * Feed data into the HMAC algorithm
