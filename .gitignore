@@ -9,4 +9,7 @@
 *.su
 *.a
 *.lo
+*.gcda
+*.gcno
+*.gcov
 /test

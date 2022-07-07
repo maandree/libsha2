@@ -62,6 +62,7 @@ MAN3 =\
 	libsha2_update.3
 
 LOBJ = $(OBJ:.o=.lo)
+SRC = $(OBJ:.o=.c)
 
 
 all: libsha2.a libsha2.$(LIBEXT) test
@@ -112,7 +113,7 @@ uninstall:
 	-cd -- "$(DESTDIR)$(MANPREFIX)/man3" && rm -f -- $(MAN3)
 
 clean:
-	-rm -f -- *.o *.lo *.su *.a *.$(LIBEXT) test
+	-rm -f -- *.o *.lo *.su *.a *.$(LIBEXT) *.gcda *.gcno *.gcov test
 
 .SUFFIXES:
 .SUFFIXES: .lo .o .c
