@@ -1,7 +1,7 @@
 CONFIGFILE_PROPER = config.mk
 include $(CONFIGFILE_PROPER)
 
-CC   = $(CC_PREFIX)gcc -std=c99
+CC   = $(CC_PREFIX)gcc -std=c11
 GCOV = gcov
 
 CFLAGS  = -g -O0 -pedantic -fprofile-arcs -ftest-coverage

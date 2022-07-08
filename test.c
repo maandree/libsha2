@@ -9,6 +9,23 @@
 #include <unistd.h>
 
 
+#define TEST_SHA256 1
+#define TEST_SHA512 1
+
+
+#if TEST_SHA256
+# define IF_TEST_SHA256(IF, ELSE) IF
+#else
+# define IF_TEST_SHA256(IF, ELSE) ELSE
+#endif
+
+#if TEST_SHA512
+# define IF_TEST_SHA512(IF, ELSE) IF
+#else
+# define IF_TEST_SHA512(IF, ELSE) ELSE
+#endif
+
+
 #define test(EXPR)\
 	do {\
 		if (EXPR)\
@@ -131,12 +148,16 @@ main(int argc, char *argv[])
 	libsha2_unhex(buf, "AAbbCcdD");
 	test(!memcmp(buf, "\xAA\xBB\xCC\xDD", 4));
 
+#if TEST_SHA256
 	test(libsha2_algorithm_output_size(LIBSHA2_224) == 28);
 	test(libsha2_algorithm_output_size(LIBSHA2_256) == 32);
+#endif
+#if TEST_SHA512
 	test(libsha2_algorithm_output_size(LIBSHA2_384) == 48);
 	test(libsha2_algorithm_output_size(LIBSHA2_512) == 64);
 	test(libsha2_algorithm_output_size(LIBSHA2_512_224) == 28);
 	test(libsha2_algorithm_output_size(LIBSHA2_512_256) == 32);
+#endif
 	test(!errno);
 	test(libsha2_algorithm_output_size(~0) == 0); /* should test `errno == EINVAL`, optimising compiler breaks it */
 
@@ -144,6 +165,7 @@ main(int argc, char *argv[])
 	test(libsha2_init(&s, ~0) == -1 && errno == EINVAL);
 	errno = 0;
 
+#if TEST_SHA256
 	test(!libsha2_init(&s, LIBSHA2_224));
 	test(libsha2_state_output_size(&s) == 28);
 	libsha2_digest(&s, "", 0, buf);
@@ -155,7 +177,9 @@ main(int argc, char *argv[])
 	libsha2_digest(&s, "", 0, buf);
 	libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
 	test_str(str, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+#endif
 
+#if TEST_SHA512
 	test(!libsha2_init(&s, LIBSHA2_384));
 	test(libsha2_state_output_size(&s) == 48);
 	libsha2_digest(&s, "", 0, buf);
@@ -179,7 +203,9 @@ main(int argc, char *argv[])
 	libsha2_digest(&s, "", 0, buf);
 	libsha2_behex_lower(str, buf, libsha2_state_output_size(&s));
 	test_str(str, "c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a");
+#endif
 
+#if TEST_SHA256
 	test_repeated(0xFF, 1, LIBSHA2_224, "e33f9d75e6ae1369dbabf81b96b4591ae46bba30b591a6b6c62542b5");
 	test_custom("\xE5\xE0\x99\x24", LIBSHA2_224, "fd19e74690d291467ce59f077df311638f1c3a46e510d0e49a67062d");
 	test_repeated(0x00, 56, LIBSHA2_224, "5c3e25b69d0ea26f260cfae87e23759e1eca9d1ecc9fbf3c62266804");
@@ -210,7 +236,9 @@ main(int argc, char *argv[])
 	test_custom("abc", LIBSHA2_256, "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
 	test_custom("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", LIBSHA2_256,
 	            "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
+#endif
 
+#if TEST_SHA512
 	test_repeated(0x00, 111, LIBSHA2_384,"435770712c611be7293a66dd0dc8d1450dc7ff7337bfe115bf058ef2eb9bed09cee85c26963a5bcc0905dc2df7cc6a76");
 	test_repeated(0x00, 112, LIBSHA2_384, "3e0cbf3aee0e3aa70415beae1bd12dd7db821efa446440f12132edffce76f635e53526a111491e75ee8e27b9700eec20");
 	test_repeated(0x00, 113, LIBSHA2_384, "6be9af2cf3cd5dd12c8d9399ec2b34e66034fbd699d4e0221d39074172a380656089caafe8f39963f94cc7c0a07e3d21");
@@ -250,9 +278,10 @@ main(int argc, char *argv[])
 	test_custom("abc", LIBSHA2_512_256, "53048e2681941ef99b2e29b76b4c7dabe4c2d0c634fc6d46e0e2f13107e7af23");
 	test_custom("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", LIBSHA2_512_256,
 	            "3928e184fb8690f840da3988121d31be65cb9d3ef83ee6146feac861e19b563a");
+#endif
 
 	for (i = 0; i < 1000; i++) {
-		for (j = 0; j < 6; j++) {
+		for (j = IF_TEST_SHA256(0, 2); j < IF_TEST_SHA512(6, 2); j++) {
 			memset(buf, 0x41, 1000);
 			test(!libsha2_init(&s, (enum libsha2_algorithm)j));
 			libsha2_update(&s, buf, i * 8);
@@ -309,6 +338,7 @@ main(int argc, char *argv[])
 
 	test(!errno);
 
+#if TEST_SHA256
 	test(!pipe(fds));
 	test((pid = fork()) >= 0);
 	if (!pid) {
@@ -394,7 +424,9 @@ main(int argc, char *argv[])
 	          "53616d706c65206d65737361676520666f72206b65796c656e3d626c6f636b6c656e",
 	          "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f60616263",
 	          "bdccb6c72ddeadb500ae768386cb38cc41c63dbb0878ddb9c7a38a431b78378d");
+#endif
 
+#if TEST_SHA512
 	test_hmac(LIBSHA2_384,
 	          "53616d706c65206d65737361676520666f72206b65796c656e3d626c6f636b6c656e",
 	          "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
@@ -424,6 +456,7 @@ main(int argc, char *argv[])
 	          "53616d706c65206d65737361676520666f72206b65796c656e3d626c6f636b6c656e",
 	          "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7",
 	          "d93ec8d2de1ad2a9957cb9b83f14e76ad6b5e0cce285079a127d3b14bccb7aa7286d4ac0d4ce64215f2bc9e6870b33d97438be4aaa20cda5c5a912b48b8e27f3");
+#endif
 
 	return 0;
 }
