@@ -90,6 +90,11 @@ process_x86_sha256(struct libsha2_state *restrict state, const unsigned char *re
 		abef_orig = s0;
 		cdgh_orig = s1;
 
+#if defined(__GNUC__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wsign-conversion"
+#endif
+
 		msg = _mm_loadu_si128((const __m128i *)&chunk[0]);
 		msg0 = _mm_shuffle_epi8(msg, SHUFFLE_MASK);
 		msg = _mm_add_epi32(msg0, _mm_set_epi64x(0xE9B5DBA5B5C0FBCFULL, 0x71374491428A2F98ULL));
@@ -225,6 +230,10 @@ process_x86_sha256(struct libsha2_state *restrict state, const unsigned char *re
 		s1 = _mm_sha256rnds2_epu32(s1, s0, msg);
 		msg = _mm_shuffle_epi32(msg, 0x0E);
 		s0 = _mm_sha256rnds2_epu32(s0, s1, msg);
+
+#if defined(__GNUC__)
+# pragma GCC diagnostic pop
+#endif
 
 	        s0 = _mm_add_epi32(s0, abef_orig);
 		s1 = _mm_add_epi32(s1, cdgh_orig);
