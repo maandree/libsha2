@@ -11,7 +11,7 @@ libsha2_digest(struct libsha2_state *restrict state, const void *message_, size_
 
 	if (msglen & ~(size_t)7) {
 		libsha2_update(state, message, msglen & ~(size_t)7);
-		message += msglen & ~(size_t)7;
+		message += msglen >> 3;
 		msglen &= (size_t)7;
 	}
 
