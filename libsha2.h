@@ -67,7 +67,7 @@ struct libsha2_state {
 		 * For 32-bit algorithms
 		 */
 		uint_least32_t b32[64];
-    
+
 		/**
 		 * For 64-bit algorithms
 		 */

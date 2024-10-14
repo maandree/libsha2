@@ -61,7 +61,7 @@ libsha2_sum_fd(int fd, enum libsha2_algorithm algorithm, void *restrict hashsum)
 
 	libsha2_digest(&state, NULL, 0, hashsum);
 #if ALLOCA_LIMIT <= 0
-       free(chunk);
+	free(chunk);
 #endif
 	return 0;
 }

@@ -256,14 +256,14 @@ __attribute__((__constructor__))
 static int
 have_sha_intrinsics(void)
 {
-        static volatile int ret = -1;
-        static volatile atomic_flag spinlock = ATOMIC_FLAG_INIT;
+	static volatile int ret = -1;
+	static volatile atomic_flag spinlock = ATOMIC_FLAG_INIT;
 	int a, b, c, d;
 
 	if (ret != -1)
 		return ret;
 
-        while (atomic_flag_test_and_set(&spinlock));
+	while (atomic_flag_test_and_set(&spinlock));
 
 	if (ret != -1)
 		goto out;
