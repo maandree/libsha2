@@ -1,6 +1,15 @@
 .POSIX:
 
-CONFIGFILE = config.mk
+CONFIGFILE = config-x86.mk
+# config-x86.mk is the default because it is compatible
+# with and optimal for most machines, and if it is not
+# supported, the compilation will immediately fail. It
+# enables optimisations on x86 CPU's that have the
+# required features.
+# 
+# config-portable.mk is available for exotic CPU's
+# and compiler that do not support the features required
+# for the optimisations.
 include $(CONFIGFILE)
 
 OS = linux
