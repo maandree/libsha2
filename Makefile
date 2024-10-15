@@ -7,6 +7,9 @@ CONFIGFILE = config-x86.mk
 # enables optimisations on x86 CPU's that have the
 # required features.
 # 
+# Additionally config-arm.mk which uses optimisations
+# for ARMv8 is available.
+# 
 # config-portable.mk is available for exotic CPU's
 # and compiler that do not support the features required
 # for the optimisations.
@@ -20,7 +23,7 @@ include mk/$(OS).mk
 
 
 LIB_MAJOR = 1
-LIB_MINOR = 0
+LIB_MINOR = 1
 LIB_VERSION = $(LIB_MAJOR).$(LIB_MINOR)
 
 
@@ -99,7 +102,7 @@ libsha2.a: $(OBJ)
 	$(AR) -s $@
 
 check: test
-	./test
+	$(CHECK_PREFIX) ./test $(CHECK_FLAGS)
 
 install:
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"

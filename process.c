@@ -3,12 +3,23 @@
 #include <stdatomic.h>
 
 #if defined(__SSE4_1__) && defined(__SSSE3__) && defined(__SSE2__) && defined(__SHA__)
-# define HAVE_X86_SHA_INTRINSICS
+# define HAVE_X86_SHA256_INTRINSICS
+#endif
+
+#if defined(__arm__) || defined(__aarch32__) || defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM)
+# if defined(__ARM_NEON) && (defined(__ARM_ACLE) || defined(__ARM_FEATURE_CRYPTO))
+#  define HAVE_ARM_SHA256_INTRINSICS
+# endif
 #endif
 
 
-#ifdef HAVE_X86_SHA_INTRINSICS
+#ifdef HAVE_X86_SHA256_INTRINSICS
 # include <immintrin.h>
+#endif
+
+#ifdef HAVE_ARM_SHA256_INTRINSICS
+# include <arm_neon.h>
+# include <arm_acle.h>
 #endif
 
 
@@ -68,7 +79,7 @@
 		h[i] = TRUNC(h[i] + work_h[i]);
 
 
-#ifdef HAVE_X86_SHA_INTRINSICS
+#ifdef HAVE_X86_SHA256_INTRINSICS
 
 static size_t
 process_x86_sha256(struct libsha2_state *restrict state, const unsigned char *restrict data, size_t len)
@@ -290,6 +301,168 @@ out:
 
 #endif
 
+#ifdef HAVE_ARM_SHA256_INTRINSICS
+
+static size_t
+process_arm_sha256(struct libsha2_state *restrict state, const unsigned char *restrict data, size_t len)
+{
+	static const uint32_t rc[] = {
+		UINT32_C(0x428A2F98), UINT32_C(0x71374491), UINT32_C(0xB5C0FBCF), UINT32_C(0xE9B5DBA5),
+		UINT32_C(0x3956C25B), UINT32_C(0x59F111F1), UINT32_C(0x923F82A4), UINT32_C(0xAB1C5ED5),
+		UINT32_C(0xD807AA98), UINT32_C(0x12835B01), UINT32_C(0x243185BE), UINT32_C(0x550C7DC3),
+		UINT32_C(0x72BE5D74), UINT32_C(0x80DEB1FE), UINT32_C(0x9BDC06A7), UINT32_C(0xC19BF174),
+		UINT32_C(0xE49B69C1), UINT32_C(0xEFBE4786), UINT32_C(0x0FC19DC6), UINT32_C(0x240CA1CC),
+		UINT32_C(0x2DE92C6F), UINT32_C(0x4A7484AA), UINT32_C(0x5CB0A9DC), UINT32_C(0x76F988DA),
+		UINT32_C(0x983E5152), UINT32_C(0xA831C66D), UINT32_C(0xB00327C8), UINT32_C(0xBF597FC7),
+		UINT32_C(0xC6E00BF3), UINT32_C(0xD5A79147), UINT32_C(0x06CA6351), UINT32_C(0x14292967),
+		UINT32_C(0x27B70A85), UINT32_C(0x2E1B2138), UINT32_C(0x4D2C6DFC), UINT32_C(0x53380D13),
+		UINT32_C(0x650A7354), UINT32_C(0x766A0ABB), UINT32_C(0x81C2C92E), UINT32_C(0x92722C85),
+		UINT32_C(0xA2BFE8A1), UINT32_C(0xA81A664B), UINT32_C(0xC24B8B70), UINT32_C(0xC76C51A3),
+		UINT32_C(0xD192E819), UINT32_C(0xD6990624), UINT32_C(0xF40E3585), UINT32_C(0x106AA070),
+		UINT32_C(0x19A4C116), UINT32_C(0x1E376C08), UINT32_C(0x2748774C), UINT32_C(0x34B0BCB5),
+		UINT32_C(0x391C0CB3), UINT32_C(0x4ED8AA4A), UINT32_C(0x5B9CCA4F), UINT32_C(0x682E6FF3),
+		UINT32_C(0x748F82EE), UINT32_C(0x78A5636F), UINT32_C(0x84C87814), UINT32_C(0x8CC70208),
+		UINT32_C(0x90BEFFFA), UINT32_C(0xA4506CEB), UINT32_C(0xBEF9A3F7), UINT32_C(0xC67178F2)
+	};
+
+	uint32x4_t abcd, efgh, abcd_orig, efgh_orig;
+	uint32x4_t msg0, msg1, msg2, msg3, tmp0, tmp1, tmp2;
+	const unsigned char *restrict chunk;
+	size_t off = 0;
+
+	abcd_orig = vld1q_u32(&state->h.b32[0]);
+	efgh_orig = vld1q_u32(&state->h.b32[4]);
+
+	for (; len - off >= state->chunk_size; off += state->chunk_size) {
+		abcd = abcd_orig;
+		efgh = efgh_orig;
+
+		chunk = &data[off];
+		msg0 = vld1q_u32((const uint32_t *)&chunk[0]);
+		msg1 = vld1q_u32((const uint32_t *)&chunk[16]);
+		msg2 = vld1q_u32((const uint32_t *)&chunk[32]);
+		msg3 = vld1q_u32((const uint32_t *)&chunk[48]);
+		msg0 = vreinterpretq_u32_u8(vrev32q_u8(vreinterpretq_u8_u32(msg0)));
+		msg1 = vreinterpretq_u32_u8(vrev32q_u8(vreinterpretq_u8_u32(msg1)));
+		msg2 = vreinterpretq_u32_u8(vrev32q_u8(vreinterpretq_u8_u32(msg2)));
+		msg3 = vreinterpretq_u32_u8(vrev32q_u8(vreinterpretq_u8_u32(msg3)));
+
+		tmp0 = vaddq_u32(msg0, vld1q_u32(&rc[0 * 4]));
+
+		msg0 = vsha256su0q_u32(msg0, msg1);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg1, vld1q_u32(&rc[1 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg0 = vsha256su1q_u32(msg0, msg2, msg3);
+
+		msg1 = vsha256su0q_u32(msg1, msg2);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg2, vld1q_u32(&rc[2 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg1 = vsha256su1q_u32(msg1, msg3, msg0);
+
+		msg2 = vsha256su0q_u32(msg2, msg3);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg3, vld1q_u32(&rc[3 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg2 = vsha256su1q_u32(msg2, msg0, msg1);
+
+		msg3 = vsha256su0q_u32(msg3, msg0);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg0, vld1q_u32(&rc[4 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg3 = vsha256su1q_u32(msg3, msg1, msg2);
+
+		msg0 = vsha256su0q_u32(msg0, msg1);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg1, vld1q_u32(&rc[5 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg0 = vsha256su1q_u32(msg0, msg2, msg3);
+
+		msg1 = vsha256su0q_u32(msg1, msg2);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg2, vld1q_u32(&rc[6 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg1 = vsha256su1q_u32(msg1, msg3, msg0);
+
+		msg2 = vsha256su0q_u32(msg2, msg3);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg3, vld1q_u32(&rc[7 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg2 = vsha256su1q_u32(msg2, msg0, msg1);
+
+		msg3 = vsha256su0q_u32(msg3, msg0);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg0, vld1q_u32(&rc[8 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg3 = vsha256su1q_u32(msg3, msg1, msg2);
+
+		msg0 = vsha256su0q_u32(msg0, msg1);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg1, vld1q_u32(&rc[9 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg0 = vsha256su1q_u32(msg0, msg2, msg3);
+
+		msg1 = vsha256su0q_u32(msg1, msg2);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg2, vld1q_u32(&rc[10 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg1 = vsha256su1q_u32(msg1, msg3, msg0);
+
+		msg2 = vsha256su0q_u32(msg2, msg3);
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg3, vld1q_u32(&rc[11 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+		msg2 = vsha256su1q_u32(msg2, msg0, msg1);
+
+		msg3 = vsha256su0q_u32(msg3, msg0);
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg0, vld1q_u32(&rc[12 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+		msg3 = vsha256su1q_u32(msg3, msg1, msg2);
+
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg1, vld1q_u32(&rc[13 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+
+		tmp2 = abcd;
+		tmp0 = vaddq_u32(msg2, vld1q_u32(&rc[14 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+
+		tmp2 = abcd;
+		tmp1 = vaddq_u32(msg3, vld1q_u32(&rc[15 * 4]));
+		abcd = vsha256hq_u32(abcd, efgh, tmp0);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp0);
+
+		tmp2 = abcd;
+		abcd = vsha256hq_u32(abcd, efgh, tmp1);
+		efgh = vsha256h2q_u32(efgh, tmp2, tmp1);
+
+		abcd_orig = vaddq_u32(abcd_orig, abcd);
+		efgh_orig = vaddq_u32(efgh_orig, efgh);
+	}
+
+	vst1q_u32(&state->h.b32[0], abcd_orig);
+	vst1q_u32(&state->h.b32[4], efgh_orig);
+
+	return off;
+}
+
+#endif
 
 size_t
 libsha2_process(struct libsha2_state *restrict state, const unsigned char *restrict data, size_t len)
@@ -298,6 +471,10 @@ libsha2_process(struct libsha2_state *restrict state, const unsigned char *restr
 	size_t off = 0;
 
 	if (state->algorithm <= LIBSHA2_256) {
+#if defined(HAVE_ARM_SHA256_INTRINSICS)
+		return process_arm_sha256(state, data, len);
+#else
+# define ROTR(X, N) TRUNC32(((X) >> (N)) | ((X) << (32 - (N))))
 		uint_least32_t s0, s1;
 		size_t i, j;
 
@@ -305,36 +482,33 @@ libsha2_process(struct libsha2_state *restrict state, const unsigned char *restr
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wmemset-elt-size"
 #endif
-#define ROTR(X, N) TRUNC32(((X) >> (N)) | ((X) << (32 - (N))))
-
-#ifdef HAVE_X86_SHA_INTRINSICS
+# ifdef HAVE_X86_SHA256_INTRINSICS
 		if (have_sha_intrinsics())
 			return process_x86_sha256(state, data, len);
-#endif
-
+# endif
 		for (; len - off >= state->chunk_size; off += state->chunk_size) {
 			chunk = &data[off];
 			SHA2_IMPLEMENTATION(chunk, 7, 18, 3, 17, 19, 10, 6, 11, 25, 2, 13, 22, uint_least32_t, 4,
 			                    TRUNC32, state->k.b32, state->w.b32, state->h.b32, state->work_h.b32);
 		}
-
-#undef ROTR
-#if defined(__GNUC__)
-# pragma GCC diagnostic pop
+# if defined(__GNUC__)
+#  pragma GCC diagnostic pop
+# endif
+# undef ROTR
 #endif
 
 	} else {
+#define ROTR(X, N) TRUNC64(((X) >> (N)) | ((X) << (64 - (N))))
 		uint_least64_t s0, s1;
 		size_t i, j;
 
-#define ROTR(X, N) TRUNC64(((X) >> (N)) | ((X) << (64 - (N))))
+		/* TODO Add optimisation using ARMv8.2 SHA-512 intrinsics (when I've access to a machine supporting it)  */
 
 		for (; len - off >= state->chunk_size; off += state->chunk_size) {
 			chunk = &data[off];
 			SHA2_IMPLEMENTATION(chunk, 1, 8, 7, 19, 61, 6, 14, 18, 41, 28, 34, 39, uint_least64_t, 8,
 			                    TRUNC64, state->k.b64, state->w.b64, state->h.b64, state->work_h.b64);
 		}
-
 #undef ROTR
 	}
 
