@@ -4,7 +4,10 @@ MANPREFIX = $(PREFIX)/share/man
 CC = cc -std=c11
 
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700
-CFLAGS   = -Wall -O3 -march=armv8-a+crypto
+CFLAGS   = -Wall -O3 -march=native
+# If you cannot use -march=native, you should do e.g -march=armv8-a+crypto
+# however, you have to be careful selecting the exact version,
+# so you may have to replace armv8-a with something else.
 LDFLAGS  = -s
 
 # You can add -DALLOCA_LIMIT=# to CPPFLAGS, where # is a size_t
