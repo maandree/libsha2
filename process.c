@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#include <errno.h>
 #include <stdatomic.h>
 
 #if defined(__SSE4_1__) && defined(__SSSE3__) && defined(__SSE2__) && defined(__SHA__)
@@ -8,7 +9,7 @@
 
 #if defined(__arm__) || defined(__aarch32__) || defined(__arm64__) || defined(__aarch64__) || defined(_M_ARM)
 # if defined(__ARM_NEON) && (defined(__ARM_ACLE) || defined(__ARM_FEATURE_CRYPTO))
-#  define HAVE_ARM_SHA256_INTRINSICS
+#  define HAVE_ARM_SHA2_INTRINSICS
 # endif
 #endif
 
@@ -17,9 +18,16 @@
 # include <immintrin.h>
 #endif
 
-#ifdef HAVE_ARM_SHA256_INTRINSICS
+#ifdef HAVE_ARM_SHA2_INTRINSICS
+# include <asm/hwcap.h>
+# include <sys/auxv.h>
 # include <arm_neon.h>
 # include <arm_acle.h>
+enum sha2_intrinsics {
+	INTRINSICS_UNKNOWN = 0xFF,
+	SHA256_INTRINSICS = 0x01,
+	SHA512_INTRINSICS = 0x02
+};
 #endif
 
 
@@ -48,13 +56,13 @@
  * @param  h          Hash values
  * @param  work_h     Space for temporary hash values
  */
-#define SHA2_IMPLEMENTATION(chunk, A, B, C, D, E, F, G, H, I, J, K, L, WORD_T, WORD_SIZE, TRUNC, k, w, h, work_h) \
+#define SHA2_IMPLEMENTATION(chunk, A, B, C, D, E, F, G, H, I, J, K, L, WORD_T, WORD_SIZE, TRUNC, k, w, h, work_h)\
 	memcpy(work_h, h, sizeof(work_h));\
 	\
 	memset(w, 0, 16 * sizeof(*(w)));\
 	for (i = 0; i < 16; i++)\
 		for (j = 0; j < WORD_SIZE; j++)\
-			w[i] |= ((WORD_T)(chunk[(i + 1) * WORD_SIZE - j - 1])) << (j << 3);\
+			w[i] |= (WORD_T)(((WORD_T)(chunk[(i + 1) * WORD_SIZE - j - 1])) << (j << 3));\
 	\
 	for (i = 16; i < sizeof(k) / sizeof(*(k)); i++)	{\
 		w[i] = w[i - 16] + w[i - 7];\
@@ -301,7 +309,7 @@ out:
 
 #endif
 
-#ifdef HAVE_ARM_SHA256_INTRINSICS
+#ifdef HAVE_ARM_SHA2_INTRINSICS
 
 static size_t
 process_arm_sha256(struct libsha2_state *restrict state, const unsigned char *restrict data, size_t len)
@@ -462,6 +470,38 @@ process_arm_sha256(struct libsha2_state *restrict state, const unsigned char *re
 	return off;
 }
 
+# if defined(__GNUC__)
+__attribute__((__constructor__))
+# endif
+static enum sha2_intrinsics
+have_sha_intrinsics(void)
+{
+	static volatile enum sha2_intrinsics ret = INTRINSICS_UNKNOWN;
+	static volatile atomic_flag spinlock = ATOMIC_FLAG_INIT;
+	unsigned long int caps;
+	enum sha2_intrinsics x;
+	int saved_errno;
+
+	if (ret != INTRINSICS_UNKNOWN)
+		return ret;
+
+	while (atomic_flag_test_and_set(&spinlock));
+
+	saved_errno = errno;
+	caps = getauxval(AT_HWCAP);
+	errno = saved_errno;
+	x = (caps & HWCAP_SHA2) ? SHA256_INTRINSICS : 0;
+	x |= (caps & HWCAP_SHA512) ? SHA512_INTRINSICS : 0;
+	ret = x;
+
+	if (ret != INTRINSICS_UNKNOWN)
+		goto out;
+
+out:
+	atomic_flag_clear(&spinlock);
+	return ret;
+}
+
 #endif
 
 size_t
@@ -471,8 +511,9 @@ libsha2_process(struct libsha2_state *restrict state, const unsigned char *restr
 	size_t off = 0;
 
 	if (state->algorithm <= LIBSHA2_256) {
-#if defined(HAVE_ARM_SHA256_INTRINSICS)
-		return process_arm_sha256(state, data, len);
+#if defined(HAVE_ARM_SHA2_INTRINSICS)
+		if (have_sha_intrinsics() & SHA256_INTRINSICS)
+			return process_arm_sha256(state, data, len);
 #else
 # define ROTR(X, N) TRUNC32(((X) >> (N)) | ((X) << (32 - (N))))
 		uint_least32_t s0, s1;
@@ -502,7 +543,7 @@ libsha2_process(struct libsha2_state *restrict state, const unsigned char *restr
 		uint_least64_t s0, s1;
 		size_t i, j;
 
-		/* TODO Add optimisation using ARMv8.2 SHA-512 intrinsics (when I've access to a machine supporting it)  */
+		/* TODO Add optimisation using ARMv8.2 SHA-512 intrinsics (when I've access to a machine supporting it) */
 
 		for (; len - off >= state->chunk_size; off += state->chunk_size) {
 			chunk = &data[off];

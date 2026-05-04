@@ -349,7 +349,9 @@ main(int argc, char *argv[])
 		exit(0);
 	}
 	close(fds[1]);
+	test(!errno);
 	test(!libsha2_sum_fd(fds[0], LIBSHA2_256, buf));
+	errno = 0; /* malloc(3) as been found to set errno=ENOENT on success */
 	test(waitpid(pid, &status, 0) == pid);
 	test(!status);
 	close(fds[0]);
