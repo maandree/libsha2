@@ -3,12 +3,18 @@ MANPREFIX = $(PREFIX)/share/man
 
 CC = cc -std=c11
 
+COMMON_SANITIZE = -fsanitize=alignment,shift,signed-integer-overflow,object-size,null,undefined,bounds,address
+CLANG_SANITIZE  = -O1 $(COMMON_SANITIZE),cfi -flto -fvisibility=hidden -fno-sanitize-trap=cfi
+GCC_SANITIZE    = -O1 $(COMMON_SANITIZE)
+#SANITIZE        = $(CLANG_SANITIZE)
+#SANITIZE        = $(GCC_SANITIZE)
+
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700
-CFLAGS   = -Wall -O3 -march=native
+CFLAGS   = $(SANITIZE) -Wall -O3 -march=native
 # If you cannot use -march=native, you should do e.g -march=armv8-a+crypto
 # however, you have to be careful selecting the exact version,
 # so you may have to replace armv8-a with something else.
-LDFLAGS  = -s
+LDFLAGS  = $(SANITIZE) -s
 
 # You can add -DALLOCA_LIMIT=# to CPPFLAGS, where # is a size_t
 # value, to put a limit on how large allocation the library is

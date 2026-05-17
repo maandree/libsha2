@@ -98,8 +98,8 @@ process_x86_sha256(struct libsha2_state *restrict state, const unsigned char *re
 	const unsigned char *restrict chunk;
 	size_t off = 0;
 
-	temp = _mm_shuffle_epi32(_mm_loadu_si128((const __m128i *)&state->h.b32[0]), 0xB1);
-	s1   = _mm_shuffle_epi32(_mm_loadu_si128((const __m128i *)&state->h.b32[4]), 0x1B);
+	temp = _mm_shuffle_epi32(_mm_loadu_si128((const __m128i *)(const unsigned char *)&state->h.b32[0]), 0xB1);
+	s1   = _mm_shuffle_epi32(_mm_loadu_si128((const __m128i *)(const unsigned char *)&state->h.b32[4]), 0x1B);
 	s0   = _mm_alignr_epi8(temp, s1, 8);
 	s1   = _mm_blend_epi16(s1, temp, 0xF0);
 
